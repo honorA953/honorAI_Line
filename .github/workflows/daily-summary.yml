@@ -1,0 +1,16 @@
+name: Trigger daily LINE summary
+
+on:
+  schedule:
+    # 13:00 UTC = 21:00 Asia/Taipei
+    - cron: '0 13 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call summary endpoint
+        run: |
+          curl -sf -X POST "https://honorai-line.onrender.com/tasks/summary" \
+            -H "x-trigger-secret: ${{ secrets.SUMMARY_TRIGGER_SECRET }}"
