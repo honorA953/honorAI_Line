@@ -9,19 +9,29 @@ const SUMMARY_KEYWORD = process.env.SUMMARY_KEYWORD || '摘要';
 
 const app = express();
 
+// 同一個對話的事件依序處理（避免同時收到多筆訊息時競速，導致摘要搶在前一則訊息寫入前執行）
+const conversationQueues = new Map();
+
+function runSerialized(conversationId, task) {
+  const previous = conversationQueues.get(conversationId) || Promise.resolve();
+  const current = previous.then(task, task);
+  conversationQueues.set(conversationId, current.catch(() => {}));
+  return current;
+}
+
 app.post('/webhook', line.middleware(config), async (req, res) => {
   res.sendStatus(200); // 先回200，避免LINE重送；事件非同步處理
   const events = req.body.events || [];
   for (const event of events) {
-    handleEvent(event).catch((err) => console.error('[webhook] event error:', err));
+    if (event.type !== 'message' || event.message.type !== 'text') continue;
+    const conversationId = getConversationId(event.source);
+    runSerialized(conversationId, () => handleEvent(event, conversationId)).catch((err) =>
+      console.error('[webhook] event error:', err)
+    );
   }
 });
 
-async function handleEvent(event) {
-  if (event.type !== 'message' || event.message.type !== 'text') return;
-
-  const conversationId = getConversationId(event.source);
-
+async function handleEvent(event, conversationId) {
   if (event.message.text.trim() === SUMMARY_KEYWORD) {
     return replyImmediateSummary(event.replyToken, conversationId);
   }
