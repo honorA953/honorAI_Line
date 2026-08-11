@@ -25,7 +25,7 @@ async function fetchLineContent(messageId) {
 }
 
 /**
- * 圖片理解：使用 OpenAI Vision 分析圖片內容與文字
+ * 圖片深度理解：畫面解析、OCR 萃取與智庫級延伸分析
  */
 async function describeImage(imageBuffer) {
   try {
@@ -34,12 +34,19 @@ async function describeImage(imageBuffer) {
       model: MODEL,
       messages: [
         {
+          role: 'system',
+          content:
+            '你是一位高級智能商業與技術分析顧問。請深入分析用戶傳送的圖片，輸出繁體中文 JSON 物件：\n' +
+            '{\n' +
+            '  "description": "精準客觀描述圖片主題與核心畫面 (60字內)",\n' +
+            '  "ocr": "若圖中有重要文字、表格數據、金額、代碼或資訊請提取整理，無則填寫「無重要文字」",\n' +
+            '  "supplement": "根據圖片內容進行深度分析、背景知識補充、趨勢解讀或專業建議 (80字內)"\n' +
+            '}\n' +
+            '請只輸出純 JSON 格式字串，不要加 markdown 標記。',
+        },
+        {
           role: 'user',
           content: [
-            {
-              type: 'text',
-              text: '請以繁體中文簡要描述這張圖片的主題、重要畫面內容、關鍵文字或圖表數據（若有）。字數請控制在 60 字以內，扼要客觀。',
-            },
             {
               type: 'image_url',
               image_url: {
@@ -50,12 +57,35 @@ async function describeImage(imageBuffer) {
           ],
         },
       ],
-      max_tokens: 150,
+      max_tokens: 300,
     });
-    return response.choices[0]?.message?.content?.trim() || '未能辨識圖片內容';
+
+    const raw = response.choices[0]?.message?.content?.trim() || '';
+    try {
+      const jsonStr = raw.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+      const parsed = JSON.parse(jsonStr);
+      return {
+        description: parsed.description || '圖片解析完成',
+        ocr: parsed.ocr || '',
+        supplement: parsed.supplement || '',
+        textSummary: `[🖼️ 圖片解析: ${parsed.description}]` + (parsed.supplement ? `\n💡 延伸洞察: ${parsed.supplement}` : ''),
+      };
+    } catch (_) {
+      return {
+        description: raw,
+        ocr: '',
+        supplement: '',
+        textSummary: `[🖼️ 圖片內容: ${raw}]`,
+      };
+    }
   } catch (err) {
     console.error('[multimodal] describeImage error:', err.message);
-    return '圖片分析失敗';
+    return {
+      description: '圖片分析失敗',
+      ocr: '',
+      supplement: '',
+      textSummary: '[🖼️ 傳送了圖片]',
+    };
   }
 }
 
@@ -88,7 +118,7 @@ function extractYoutubeId(url) {
 }
 
 /**
- * YouTube 影片摘要：抓取字幕逐字稿 + oEmbed 資訊並總結
+ * YouTube 影片深度摘要：字幕逐字稿 + 核心精華 + AI 背景資料補充
  */
 async function summarizeYoutube(url, videoId) {
   try {
@@ -104,7 +134,7 @@ async function summarizeYoutube(url, videoId) {
       }
     } catch (_) {}
 
-    // 嘗試抓取字幕
+    // 抓取字幕逐字稿
     let transcriptText = '';
     try {
       const items = await YoutubeTranscript.fetchTranscript(videoId, { lang: 'zh-TW' })
@@ -116,39 +146,74 @@ async function summarizeYoutube(url, videoId) {
         transcriptText = items
           .map((i) => i.text)
           .join(' ')
-          .slice(0, 4000);
+          .slice(0, 4500);
       }
     } catch (_) {}
 
-    if (transcriptText) {
-      const completion = await openai.chat.completions.create({
-        model: MODEL,
-        messages: [
-          {
-            role: 'system',
-            content:
-              '你是一個精準的影片重點整理助手。請根據提供的 YouTube 影片標題與字幕內容，整理出 2~3 點核心重點，每點一句話，繁體中文呈現。',
-          },
-          {
-            role: 'user',
-            content: `標題: ${title}\n\n字幕逐字稿:\n${transcriptText}`,
-          },
-        ],
-        max_tokens: 200,
-      });
-      const summary = completion.choices[0]?.message?.content?.trim();
-      return `【🎬 影片: ${title}】\n${summary}`;
-    }
+    const promptInput = transcriptText
+      ? `影片標題: ${title}\n\n字幕逐字稿內容:\n${transcriptText}`
+      : `影片標題: ${title}\n\n(此影片未提供公開字幕，請根據標題與該主題進行分析)`;
 
-    return `【🎬 影片: ${title}】(無提供字幕，已記錄連結)`;
+    const completion = await openai.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {
+          role: 'system',
+          content:
+            '你是一位高階智庫與內容精研分析師。請分析這部 YouTube 影片，並輸出繁體中文 JSON：\n' +
+            '{\n' +
+            '  "title": "影片標題 (簡潔化)",\n' +
+            '  "points": ["核心重點1", "核心重點2", "核心重點3"],\n' +
+            '  "supplement": "主動補充背景知識、產業脈絡、專有名詞科普、核心洞察或相關延伸資訊 (100字以內)"\n' +
+            '}\n' +
+            '請只輸出純 JSON 格式字串，不要加 markdown 標記。',
+        },
+        { role: 'user', content: promptInput },
+      ],
+      max_tokens: 350,
+    });
+
+    const raw = completion.choices[0]?.message?.content?.trim() || '';
+    try {
+      const jsonStr = raw.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+      const parsed = JSON.parse(jsonStr);
+      const points = Array.isArray(parsed.points) ? parsed.points : [];
+      const textPoints = points.map((p, i) => `${i + 1}. ${p}`).join('\n');
+      const textSummary =
+        `【🎬 影片: ${parsed.title || title}】\n` +
+        `📌 核心重點:\n${textPoints}\n\n` +
+        `💡 AI 智庫補充:\n${parsed.supplement || '無額外補充'}`;
+
+      return {
+        title: parsed.title || title,
+        points,
+        supplement: parsed.supplement || '',
+        url,
+        textSummary,
+      };
+    } catch (_) {
+      return {
+        title,
+        points: [raw],
+        supplement: '',
+        url,
+        textSummary: `【🎬 影片: ${title}】\n${raw}`,
+      };
+    }
   } catch (err) {
     console.error('[multimodal] summarizeYoutube error:', err.message);
-    return `【🎬 YouTube 影片連結】`;
+    return {
+      title: 'YouTube 影片',
+      points: ['影片連結解析失敗'],
+      supplement: '',
+      url,
+      textSummary: `【🎬 影片連結: ${url}】`,
+    };
   }
 }
 
 /**
- * 一般網頁/文章摘要
+ * 一般網頁/新聞深度摘要與背景延伸
  */
 async function summarizeWebpage(url) {
   try {
@@ -178,11 +243,11 @@ async function summarizeWebpage(url) {
       .join(' ')
       .replace(/\s+/g, ' ')
       .trim()
-      .slice(0, 2000);
+      .slice(0, 2500);
 
     const contentForAi = `標題: ${title}\n簡介: ${description}\n內文節錄: ${bodyText}`.trim();
     if (contentForAi.length < 20) {
-      return `【🔗 網頁: ${title}】`;
+      return null;
     }
 
     const completion = await openai.chat.completions.create({
@@ -191,15 +256,44 @@ async function summarizeWebpage(url) {
         {
           role: 'system',
           content:
-            '請將以下網頁內容整理成 1~2 句繁體中文重點摘要，精確提煉該文章或頁面的核心訊息。',
+            '你是一位專業情報與內容分析師。請分析此網頁內容，並輸出繁體中文 JSON：\n' +
+            '{\n' +
+            '  "title": "網頁標題",\n' +
+            '  "summary": "提煉該頁面的核心精華 (80字以內)",\n' +
+            '  "supplement": "主動補充該主題的背景來歷、產業趨勢、技術概念或延伸重要資訊 (80字以內)"\n' +
+            '}\n' +
+            '請只輸出純 JSON 格式字串，不要加 markdown 標記。',
         },
         { role: 'user', content: contentForAi },
       ],
-      max_tokens: 150,
+      max_tokens: 300,
     });
 
-    const summary = completion.choices[0]?.message?.content?.trim();
-    return `【🔗 網頁: ${title}】\n重點: ${summary}`;
+    const raw = completion.choices[0]?.message?.content?.trim() || '';
+    try {
+      const jsonStr = raw.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+      const parsed = JSON.parse(jsonStr);
+      const textSummary =
+        `【🔗 網頁: ${parsed.title || title}】\n` +
+        `📌 核心摘要: ${parsed.summary}\n\n` +
+        `💡 AI 背景補充: ${parsed.supplement || '無'}`;
+
+      return {
+        title: parsed.title || title,
+        summary: parsed.summary || '',
+        supplement: parsed.supplement || '',
+        url,
+        textSummary,
+      };
+    } catch (_) {
+      return {
+        title,
+        summary: raw,
+        supplement: '',
+        url,
+        textSummary: `【🔗 網頁: ${title}】\n${raw}`,
+      };
+    }
   } catch (err) {
     console.error('[multimodal] summarizeWebpage error:', err.message);
     return null;
@@ -207,29 +301,36 @@ async function summarizeWebpage(url) {
 }
 
 /**
- * 處理文字中的 URL，並附加摘要資訊
+ * 處理文字中的 URL，並回傳結構化資料與純文字摘要
  */
 async function enrichMessageText(text) {
   const urls = text.match(URL_REGEX);
-  if (!urls || urls.length === 0) return { enrichedText: text, summaries: [] };
+  if (!urls || urls.length === 0) return { enrichedText: text, items: [] };
 
-  const summaries = [];
+  const items = [];
+  const textSummaries = [];
+
   for (const url of urls.slice(0, 3)) {
-    // 限制單則訊息最多解析 3 個 URL，避免阻塞
     const youtubeId = extractYoutubeId(url);
     if (youtubeId) {
-      const ytSummary = await summarizeYoutube(url, youtubeId);
-      if (ytSummary) summaries.push(ytSummary);
+      const ytResult = await summarizeYoutube(url, youtubeId);
+      if (ytResult) {
+        items.push({ type: 'youtube', ...ytResult });
+        textSummaries.push(ytResult.textSummary);
+      }
     } else {
-      const webSummary = await summarizeWebpage(url);
-      if (webSummary) summaries.push(webSummary);
+      const webResult = await summarizeWebpage(url);
+      if (webResult) {
+        items.push({ type: 'web', ...webResult });
+        textSummaries.push(webResult.textSummary);
+      }
     }
   }
 
-  if (summaries.length === 0) return { enrichedText: text, summaries: [] };
+  if (textSummaries.length === 0) return { enrichedText: text, items: [] };
   return {
-    enrichedText: `${text}\n\n${summaries.join('\n\n')}`,
-    summaries,
+    enrichedText: `${text}\n\n${textSummaries.join('\n\n')}`,
+    items,
   };
 }
 

@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const { client } = require('./line');
 const db = require('./db');
 const { summarizeMessages } = require('./summarize');
+const { createExecutiveSummaryFlex } = require('./flex');
 
 const MAX_PER_BATCH = parseInt(process.env.MAX_MESSAGES_PER_SUMMARY || '300', 10);
 
@@ -39,9 +40,19 @@ async function runSummaryJob() {
     try {
       const summary = await summarizeConversation(messages);
       const targetId = extractTargetId(conversationId);
+      let pushMsg;
+      try {
+        pushMsg = createExecutiveSummaryFlex({
+          title: '🗓️ 今日對話總結與智庫簡報',
+          summaryText: summary,
+        });
+      } catch (_) {
+        pushMsg = { type: 'text', text: `🗓️ 今日總結\n\n${summary}` };
+      }
+
       await client.pushMessage({
         to: targetId,
-        messages: [{ type: 'text', text: `🗓️ 今日總結\n\n${summary}` }],
+        messages: [pushMsg],
       });
       await db.appendHistory({
         conversationId,

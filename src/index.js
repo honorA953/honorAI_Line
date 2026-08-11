@@ -10,6 +10,12 @@ const {
   transcribeAudio,
   enrichMessageText,
 } = require('./multimodal');
+const {
+  createVideoFlex,
+  createWebFlex,
+  createImageFlex,
+  createExecutiveSummaryFlex,
+} = require('./flex');
 
 const SUMMARY_KEYWORD = process.env.SUMMARY_KEYWORD || '摘要';
 
@@ -40,7 +46,7 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
 async function handleEvent(event, conversationId) {
   const messageType = event.message.type;
   let textContent = null;
-  let immediateReply = null;
+  let replyMessages = [];
 
   if (messageType === 'text') {
     const rawText = event.message.text.trim();
@@ -48,17 +54,44 @@ async function handleEvent(event, conversationId) {
       return replyImmediateSummary(event.replyToken, conversationId);
     }
     // 檢查是否有網址（YouTube/網頁）並豐富化內容
-    const { enrichedText, summaries } = await enrichMessageText(event.message.text);
+    const { enrichedText, items } = await enrichMessageText(event.message.text);
     textContent = enrichedText;
-    if (summaries && summaries.length > 0) {
-      immediateReply = summaries.join('\n\n');
+
+    if (items && items.length > 0) {
+      for (const item of items) {
+        if (item.type === 'youtube') {
+          replyMessages.push(
+            createVideoFlex({
+              title: item.title,
+              points: item.points,
+              supplement: item.supplement,
+              url: item.url,
+            })
+          );
+        } else if (item.type === 'web') {
+          replyMessages.push(
+            createWebFlex({
+              title: item.title,
+              summary: item.summary,
+              supplement: item.supplement,
+              url: item.url,
+            })
+          );
+        }
+      }
     }
   } else if (messageType === 'image') {
     try {
       const buffer = await fetchLineContent(event.message.id);
-      const desc = await describeImage(buffer);
-      textContent = `[🖼️ 圖片內容: ${desc}]`;
-      immediateReply = `🖼️ 圖片解析：\n${desc}`;
+      const imgData = await describeImage(buffer);
+      textContent = imgData.textSummary;
+      replyMessages.push(
+        createImageFlex({
+          description: imgData.description,
+          ocr: imgData.ocr,
+          supplement: imgData.supplement,
+        })
+      );
     } catch (err) {
       console.error('[webhook] image processing error:', err.message);
       textContent = '[🖼️ 傳送了圖片]';
@@ -68,7 +101,10 @@ async function handleEvent(event, conversationId) {
       const buffer = await fetchLineContent(event.message.id);
       const transcript = await transcribeAudio(buffer);
       textContent = `[🎙️ 語音訊息: "${transcript}"]`;
-      immediateReply = `🎙️ 語音辨識：\n${transcript}`;
+      replyMessages.push({
+        type: 'text',
+        text: `🎙️ 語音辨識：\n${transcript}`,
+      });
     } catch (err) {
       console.error('[webhook] audio processing error:', err.message);
       textContent = '[🎙️ 傳送了語音訊息]';
@@ -90,16 +126,24 @@ async function handleEvent(event, conversationId) {
     timestamp: event.timestamp,
   });
 
-  // 若有解析出影片/網頁摘要、圖片內容或語音，即時回覆 LINE
-  if (immediateReply && event.replyToken) {
+  // 若有解析出影片/網頁摘要、圖片內容或語音，即時以高質感卡片回覆 LINE
+  if (replyMessages.length > 0 && event.replyToken) {
     try {
       await client.replyMessage({
         replyToken: event.replyToken,
-        messages: [{ type: 'text', text: immediateReply }],
+        messages: replyMessages.slice(0, 5), // LINE 限制單次回覆最多 5 則訊息
       });
-      console.log(`[webhook] sent immediate reply for ${messageType} to ${conversationId}`);
+      console.log(`[webhook] sent flex reply for ${messageType} to ${conversationId}`);
     } catch (err) {
-      console.error('[webhook] reply error:', err.message);
+      console.error('[webhook] flex reply error, falling back to text:', err.message);
+      // Fallback to text if flex rejected
+      try {
+        const fallbackText = items?.map((i) => i.textSummary).join('\n\n') || textContent;
+        await client.replyMessage({
+          replyToken: event.replyToken,
+          messages: [{ type: 'text', text: fallbackText }],
+        });
+      } catch (_) {}
     }
   }
 }
@@ -115,10 +159,23 @@ async function replyImmediateSummary(replyToken, conversationId) {
   }
 
   const summary = await summarizeConversation(messages);
-  await client.replyMessage({
-    replyToken,
-    messages: [{ type: 'text', text: `📋 對話摘要\n\n${summary}` }],
-  });
+  try {
+    const flexCard = createExecutiveSummaryFlex({
+      title: '📋 對話深度總結報告',
+      summaryText: summary,
+    });
+    await client.replyMessage({
+      replyToken,
+      messages: [flexCard],
+    });
+  } catch (err) {
+    console.error('[summary] flex failed, fallback to text:', err.message);
+    await client.replyMessage({
+      replyToken,
+      messages: [{ type: 'text', text: `📋 對話深度總結\n\n${summary}` }],
+    });
+  }
+
   await db.appendHistory({
     conversationId,
     messages,
