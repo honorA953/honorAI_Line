@@ -43,6 +43,12 @@ async function runSummaryJob() {
         to: targetId,
         messages: [{ type: 'text', text: `📋 對話摘要\n\n${summary}` }],
       });
+      await db.appendHistory({
+        conversationId,
+        messages,
+        summary,
+        generatedAt: new Date().toISOString(),
+      });
       await db.clearMessages(conversationId);
       console.log(`[summary] pushed & cleared for ${conversationId}`);
     } catch (err) {

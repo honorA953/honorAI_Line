@@ -6,6 +6,7 @@ const redis = new Redis({
 });
 
 const KEY_PREFIX = 'linechat:messages:';
+const HISTORY_KEY = 'linechat:history';
 
 // conversationId 例如 "user:U123" 或 "group:G123" 或 "room:R123"
 async function appendMessage(conversationId, message) {
@@ -26,4 +27,16 @@ async function clearMessages(conversationId) {
   await redis.del(KEY_PREFIX + conversationId);
 }
 
-module.exports = { appendMessage, getMessages, getAllConversationIds, clearMessages };
+// 每次產生摘要時留一份完整記錄（含原始訊息），供同步程式備份到外部資料庫後再清除
+async function appendHistory(record) {
+  await redis.rpush(HISTORY_KEY, JSON.stringify(record));
+}
+
+module.exports = {
+  appendMessage,
+  getMessages,
+  getAllConversationIds,
+  clearMessages,
+  appendHistory,
+  HISTORY_KEY,
+};
