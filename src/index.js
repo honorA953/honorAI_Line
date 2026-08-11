@@ -1,9 +1,11 @@
 require('dotenv').config();
 
 const express = require('express');
-const { line, config, getConversationId, getDisplayName } = require('./line');
+const { line, config, client, getConversationId, getDisplayName } = require('./line');
 const db = require('./db');
-const { startScheduler, runSummaryJob } = require('./scheduler');
+const { startScheduler, runSummaryJob, summarizeConversation } = require('./scheduler');
+
+const SUMMARY_KEYWORD = process.env.SUMMARY_KEYWORD || '摘要';
 
 const app = express();
 
@@ -19,14 +21,37 @@ async function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') return;
 
   const conversationId = getConversationId(event.source);
-  const displayName = await getDisplayName(event.source);
 
+  if (event.message.text.trim() === SUMMARY_KEYWORD) {
+    return replyImmediateSummary(event.replyToken, conversationId);
+  }
+
+  const displayName = await getDisplayName(event.source);
   await db.appendMessage(conversationId, {
     userId: event.source.userId,
     displayName,
     text: event.message.text,
     timestamp: event.timestamp,
   });
+}
+
+async function replyImmediateSummary(replyToken, conversationId) {
+  const messages = await db.getMessages(conversationId);
+  if (!messages.length) {
+    await client.replyMessage({
+      replyToken,
+      messages: [{ type: 'text', text: '目前還沒有累積新的對話內容。' }],
+    });
+    return;
+  }
+
+  const summary = await summarizeConversation(messages);
+  await client.replyMessage({
+    replyToken,
+    messages: [{ type: 'text', text: `📋 對話摘要\n\n${summary}` }],
+  });
+  await db.clearMessages(conversationId);
+  console.log(`[summary] replied on-demand & cleared for ${conversationId}`);
 }
 
 // 觸發一次摘要工作。本機開發沒設定 SUMMARY_TRIGGER_SECRET 時可直接呼叫；

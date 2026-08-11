@@ -61,4 +61,4 @@ function startScheduler() {
   console.log(`[scheduler] registered cron: ${expr}`);
 }
 
-module.exports = { startScheduler, runSummaryJob };
+module.exports = { startScheduler, runSummaryJob, summarizeConversation, extractTargetId };
