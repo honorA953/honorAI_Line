@@ -41,7 +41,7 @@ async function runSummaryJob() {
       const targetId = extractTargetId(conversationId);
       await client.pushMessage({
         to: targetId,
-        messages: [{ type: 'text', text: `📋 對話摘要\n\n${summary}` }],
+        messages: [{ type: 'text', text: `🗓️ 今日總結\n\n${summary}` }],
       });
       await db.appendHistory({
         conversationId,
