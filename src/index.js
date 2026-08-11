@@ -4,6 +4,12 @@ const express = require('express');
 const { line, config, client, getConversationId, getDisplayName } = require('./line');
 const db = require('./db');
 const { startScheduler, runSummaryJob, summarizeConversation } = require('./scheduler');
+const {
+  fetchLineContent,
+  describeImage,
+  transcribeAudio,
+  enrichMessageText,
+} = require('./multimodal');
 
 const SUMMARY_KEYWORD = process.env.SUMMARY_KEYWORD || '摘要';
 
@@ -23,7 +29,7 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
   res.sendStatus(200); // 先回200，避免LINE重送；事件非同步處理
   const events = req.body.events || [];
   for (const event of events) {
-    if (event.type !== 'message' || event.message.type !== 'text') continue;
+    if (event.type !== 'message') continue;
     const conversationId = getConversationId(event.source);
     runSerialized(conversationId, () => handleEvent(event, conversationId)).catch((err) =>
       console.error('[webhook] event error:', err)
@@ -32,17 +38,70 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
 });
 
 async function handleEvent(event, conversationId) {
-  if (event.message.text.trim() === SUMMARY_KEYWORD) {
-    return replyImmediateSummary(event.replyToken, conversationId);
+  const messageType = event.message.type;
+  let textContent = null;
+  let immediateReply = null;
+
+  if (messageType === 'text') {
+    const rawText = event.message.text.trim();
+    if (rawText === SUMMARY_KEYWORD) {
+      return replyImmediateSummary(event.replyToken, conversationId);
+    }
+    // 檢查是否有網址（YouTube/網頁）並豐富化內容
+    const { enrichedText, summaries } = await enrichMessageText(event.message.text);
+    textContent = enrichedText;
+    if (summaries && summaries.length > 0) {
+      immediateReply = summaries.join('\n\n');
+    }
+  } else if (messageType === 'image') {
+    try {
+      const buffer = await fetchLineContent(event.message.id);
+      const desc = await describeImage(buffer);
+      textContent = `[🖼️ 圖片內容: ${desc}]`;
+      immediateReply = `🖼️ 圖片解析：\n${desc}`;
+    } catch (err) {
+      console.error('[webhook] image processing error:', err.message);
+      textContent = '[🖼️ 傳送了圖片]';
+    }
+  } else if (messageType === 'audio') {
+    try {
+      const buffer = await fetchLineContent(event.message.id);
+      const transcript = await transcribeAudio(buffer);
+      textContent = `[🎙️ 語音訊息: "${transcript}"]`;
+      immediateReply = `🎙️ 語音辨識：\n${transcript}`;
+    } catch (err) {
+      console.error('[webhook] audio processing error:', err.message);
+      textContent = '[🎙️ 傳送了語音訊息]';
+    }
+  } else if (messageType === 'video') {
+    textContent = '[🎬 傳送了一段影片檔案]';
+  } else if (messageType === 'file') {
+    const fileName = event.message.fileName || '檔案';
+    textContent = `[📎 傳送了檔案: ${fileName}]`;
   }
+
+  if (!textContent) return;
 
   const displayName = await getDisplayName(event.source);
   await db.appendMessage(conversationId, {
     userId: event.source.userId,
     displayName,
-    text: event.message.text,
+    text: textContent,
     timestamp: event.timestamp,
   });
+
+  // 若有解析出影片/網頁摘要、圖片內容或語音，即時回覆 LINE
+  if (immediateReply && event.replyToken) {
+    try {
+      await client.replyMessage({
+        replyToken: event.replyToken,
+        messages: [{ type: 'text', text: immediateReply }],
+      });
+      console.log(`[webhook] sent immediate reply for ${messageType} to ${conversationId}`);
+    } catch (err) {
+      console.error('[webhook] reply error:', err.message);
+    }
+  }
 }
 
 async function replyImmediateSummary(replyToken, conversationId) {

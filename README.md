@@ -4,7 +4,12 @@ LINE官方帳號(Messaging API) Bot：記錄收到的對話內容，用OpenAI整
 
 ## 運作方式
 
-1. `POST /webhook` 接收LINE傳來的訊息事件，把文字訊息存進 Upstash Redis（依1對1/群組/聊天室分開存放）
+1. `POST /webhook` 接收LINE傳來的訊息事件（支援純文字、含YouTube/網頁連結、圖片、語音訊息）：
+   - **YouTube 連結**：自動抓取字幕逐字稿與影片資訊，提煉 2~3 點精華重點
+   - **網頁/文章連結**：自動爬梳 OpenGraph 與內文，產出網頁核心摘要
+   - **圖片訊息**：透過 OpenAI Vision (GPT-4o-mini) 辨識畫面主體、圖表數據與 OCR 文字
+   - **語音訊息**：透過 OpenAI Whisper 語音轉文字
+   - 所有訊息與摘要自動存入 Upstash Redis（依 1對1 / 群組 / 聊天室分開存放）
 2. 使用者傳送關鍵字（預設「摘要」）時，立即整理目前累積的對話並回覆
 3. 每天固定時間（預設21:00），由GitHub Actions排程呼叫 `POST /tasks/summary` 觸發整理，針對每個有新訊息的對話呼叫OpenAI摘要，用 `pushMessage` 推播回去，並清空已摘要的訊息
 
