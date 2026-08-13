@@ -1,0 +1,16 @@
+name: Trigger daily construction news
+
+on:
+  schedule:
+    # 00:00 UTC = 08:00 Asia/Taipei
+    - cron: '0 0 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call news endpoint
+        run: |
+          curl -sf -X POST "https://honorai-line.onrender.com/tasks/news" \
+            -H "x-trigger-secret: ${{ secrets.SUMMARY_TRIGGER_SECRET }}"

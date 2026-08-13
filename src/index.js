@@ -8,7 +8,12 @@ try {
 const express = require('express');
 const { line, config, client, getConversationId, getDisplayName } = require('./line');
 const db = require('./db');
-const { startScheduler, runSummaryJob, summarizeConversation } = require('./scheduler');
+const {
+  startScheduler,
+  runSummaryJob,
+  runNewsJob,
+  summarizeConversation,
+} = require('./scheduler');
 const {
   fetchLineContent,
   describeImage,
@@ -21,13 +26,16 @@ const {
   createImageFlex,
   createAudioFlex,
   createExecutiveSummaryFlex,
+  createConstructionNewsFlex,
 } = require('./flex');
+const { getDailyConstructionDigest } = require('./news');
 
 const SUMMARY_KEYWORD = process.env.SUMMARY_KEYWORD || '摘要';
+const NEWS_KEYWORDS = ['建築新聞', '今日新聞', '新聞', '晨報', '建築晨報', '今日建築新聞', '工程新聞', '建築情報'];
 
 const app = express();
 
-// 同一個對話的事件依序處理（避免同時收到多筆訊息時競速，導致摘要搶在前一則訊息寫入前執行）
+// 同一個對話的事件依序處理（避免同時收到多筆訊息時競速）
 const conversationQueues = new Map();
 
 function runSerialized(conversationId, task) {
@@ -43,6 +51,7 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
   for (const event of events) {
     if (event.type !== 'message') continue;
     const conversationId = getConversationId(event.source);
+    await db.registerConversation(conversationId);
     runSerialized(conversationId, () => handleEvent(event, conversationId)).catch((err) =>
       console.error('[webhook] event error:', err)
     );
@@ -58,6 +67,9 @@ async function handleEvent(event, conversationId) {
     const rawText = event.message.text.trim();
     if (rawText === SUMMARY_KEYWORD) {
       return replyImmediateSummary(event.replyToken, conversationId);
+    }
+    if (NEWS_KEYWORDS.includes(rawText)) {
+      return replyImmediateNews(event.replyToken);
     }
     // 檢查是否有網址（YouTube/網頁）並豐富化內容
     const { enrichedText, items } = await enrichMessageText(event.message.text);
@@ -143,7 +155,6 @@ async function handleEvent(event, conversationId) {
       console.log(`[webhook] sent flex reply for ${messageType} to ${conversationId}`);
     } catch (err) {
       console.error('[webhook] flex reply error, falling back to text:', err.message);
-      // Fallback to text if flex rejected
       try {
         const fallbackText = items?.map((i) => i.textSummary).join('\n\n') || textContent;
         await client.replyMessage({
@@ -193,8 +204,25 @@ async function replyImmediateSummary(replyToken, conversationId) {
   console.log(`[summary] replied on-demand & cleared for ${conversationId}`);
 }
 
-// 觸發一次摘要工作。本機開發沒設定 SUMMARY_TRIGGER_SECRET 時可直接呼叫；
-// 正式環境設定後，需帶正確的 x-trigger-secret header 才能觸發（給外部cron服務排程呼叫）。
+async function replyImmediateNews(replyToken) {
+  try {
+    const digest = await getDailyConstructionDigest();
+    const flexCard = createConstructionNewsFlex(digest);
+    await client.replyMessage({
+      replyToken,
+      messages: [flexCard],
+    });
+    console.log('[news] replied on-demand construction news flex card');
+  } catch (err) {
+    console.error('[news] on-demand reply error:', err.message);
+    await client.replyMessage({
+      replyToken,
+      messages: [{ type: 'text', text: '🏗️ 正在抓取最新建築與營造產業新聞，請稍候片刻再試。' }],
+    });
+  }
+}
+
+// 手動觸發晚間對話摘要排程
 app.post('/tasks/summary', express.json(), async (req, res) => {
   const secret = process.env.SUMMARY_TRIGGER_SECRET;
   if (secret && req.get('x-trigger-secret') !== secret) {
@@ -202,6 +230,16 @@ app.post('/tasks/summary', express.json(), async (req, res) => {
   }
   await runSummaryJob();
   res.json({ ok: true });
+});
+
+// 手動觸發晨間建築新聞推播排程
+app.post('/tasks/news', express.json(), async (req, res) => {
+  const secret = process.env.SUMMARY_TRIGGER_SECRET;
+  if (secret && req.get('x-trigger-secret') !== secret) {
+    return res.sendStatus(401);
+  }
+  const result = await runNewsJob();
+  res.json({ ok: true, result });
 });
 
 const PORT = process.env.PORT || 3000;

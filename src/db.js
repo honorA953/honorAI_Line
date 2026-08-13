@@ -7,9 +7,22 @@ const redis = new Redis({
 
 const KEY_PREFIX = 'linechat:messages:';
 const HISTORY_KEY = 'linechat:history';
+const CONVERSATIONS_SET_KEY = 'linechat:conversations';
+
+// 登記對話 ID 至活躍訂閱集合
+async function registerConversation(conversationId) {
+  try {
+    if (conversationId && !conversationId.startsWith('unknown:')) {
+      await redis.sadd(CONVERSATIONS_SET_KEY, conversationId);
+    }
+  } catch (err) {
+    console.error('[db] registerConversation error:', err.message);
+  }
+}
 
 // conversationId 例如 "user:U123" 或 "group:G123" 或 "room:R123"
 async function appendMessage(conversationId, message) {
+  await registerConversation(conversationId);
   await redis.rpush(KEY_PREFIX + conversationId, JSON.stringify(message));
 }
 
@@ -19,8 +32,15 @@ async function getMessages(conversationId) {
 }
 
 async function getAllConversationIds() {
-  const keys = await redis.keys(`${KEY_PREFIX}*`);
-  return keys.map((key) => key.slice(KEY_PREFIX.length));
+  try {
+    const registered = (await redis.smembers(CONVERSATIONS_SET_KEY).catch(() => [])) || [];
+    const keys = (await redis.keys(`${KEY_PREFIX}*`).catch(() => [])) || [];
+    const fromKeys = keys.map((key) => key.slice(KEY_PREFIX.length));
+    return Array.from(new Set([...registered, ...fromKeys]));
+  } catch (err) {
+    console.error('[db] getAllConversationIds error:', err.message);
+    return [];
+  }
 }
 
 async function clearMessages(conversationId) {
@@ -33,10 +53,12 @@ async function appendHistory(record) {
 }
 
 module.exports = {
+  registerConversation,
   appendMessage,
   getMessages,
   getAllConversationIds,
   clearMessages,
   appendHistory,
   HISTORY_KEY,
+  CONVERSATIONS_SET_KEY,
 };

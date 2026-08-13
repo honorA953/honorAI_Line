@@ -1,13 +1,8 @@
 require('dotenv').config();
 
-const dns = require('node:dns');
-try {
-  dns.setDefaultResultOrder('ipv4first');
-} catch (_) {}
-
-const https = require('https');
-const OpenAI = require('openai');
+const { execFile } = require('child_process');
 const cheerio = require('cheerio');
+const OpenAI = require('openai');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
@@ -17,45 +12,47 @@ const RSS_FEEDS = [
   'https://news.google.com/rss/search?q=%E7%87%9F%E9%80%A0+%E9%83%BD%E6%9B%B4+%E5%B7%A5%E7%A8%8B+%E6%88%BF%E5%B8%82%E6%B3%95%E8%A6%8F&hl=zh-TW&gl=TW&ceid=TW:zh-Hant',
 ];
 
-function fetchHttps(url) {
+function fetchWithCurl(url) {
   return new Promise((resolve, reject) => {
-    const req = https.get(
-      url,
-      {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'Accept-Language': 'zh-TW,zh;q=0.9,en;q=0.8',
-        },
-        timeout: 8000,
-      },
-      (res) => {
-        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          return fetchHttps(res.headers.location).then(resolve, reject);
-        }
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('end', () => resolve(data));
+    execFile(
+      'curl',
+      [
+        '-s',
+        '-L',
+        '--max-time',
+        '6',
+        '-A',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        url,
+      ],
+      { maxBuffer: 10 * 1024 * 1024 },
+      (err, stdout) => {
+        if (err) return reject(err);
+        resolve(stdout);
       }
     );
-    req.on('error', reject);
-    req.on('timeout', () => {
-      req.destroy();
-      reject(new Error('Request timeout'));
-    });
   });
 }
 
 /**
- * 從 RSS 來源抓取最新建築與營建新聞
+ * 從 RSS 來源並行抓取最新建築與營建新聞
  */
 async function fetchRawRssNews() {
-  const items = [];
-  for (const feedUrl of RSS_FEEDS) {
-    try {
-      const xml = await fetchHttps(feedUrl);
-      const $ = cheerio.load(xml, { xmlMode: true });
+  console.log('[news] Fetching RSS feeds via curl...');
+  const xmlResults = await Promise.all(
+    RSS_FEEDS.map((feedUrl) =>
+      fetchWithCurl(feedUrl).catch((err) => {
+        console.error(`[news] RSS fetch error (${feedUrl}):`, err.message);
+        return '';
+      })
+    )
+  );
 
+  const items = [];
+  for (const xml of xmlResults) {
+    if (!xml) continue;
+    try {
+      const $ = cheerio.load(xml, { xmlMode: true });
       $('item').slice(0, 10).each((_, el) => {
         const title = $(el).find('title').text().trim();
         const link = $(el).find('link').text().trim();
@@ -68,9 +65,10 @@ async function fetchRawRssNews() {
         }
       });
     } catch (err) {
-      console.error(`[news] RSS fetch error (${feedUrl}):`, err.message);
+      console.error('[news] XML parse error:', err.message);
     }
   }
+  console.log(`[news] Total parsed raw items: ${items.length}`);
   return items;
 }
 
@@ -93,9 +91,11 @@ async function summarizeConstructionNews(rawItems) {
     )
     .join('\n---\n');
 
+  console.log(`[news] Requesting OpenAI summary for ${Math.min(rawItems.length, 15)} news items...`);
   try {
     const completion = await openai.chat.completions.create({
       model: MODEL,
+      response_format: { type: 'json_object' },
       messages: [
         {
           role: 'system',
@@ -115,13 +115,14 @@ async function summarizeConstructionNews(rawItems) {
             '      "url": "原始連結網址"\n' +
             '    }\n' +
             '  ]\n' +
-            '}\n' +
-            '請只輸出純 JSON 字串，不要包含任何 markdown 標記。',
+            '}',
         },
         { role: 'user', content: rawListText },
       ],
-      max_tokens: 800,
+      max_tokens: 1500,
     });
+
+    console.log('[news] OpenAI returned successfully, parsing JSON...');
 
     const raw = completion.choices[0]?.message?.content?.trim() || '';
     const jsonStr = raw.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
