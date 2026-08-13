@@ -1,11 +1,53 @@
 /**
- * LINE Flex Message 頂級 UI/UX 設計系統 (Executive Obsidian & High-Contrast Palette)
- * 專為跨平台 (iOS / Android / PC / Mac) 淺色與深色模式深度調校
- * 具備層次分明之 Header 膠囊標籤、微卡片模組化區塊、色系語意化視覺指引與全互動按鈕
+ * 🏛️ LINE Flex Message 頂級建築美學設計系統 (Unified Obsidian & Architectural Slate Palette)
+ * 嚴格遵循統一色系：曜石黑 (#0A0F1D) Header + 香檳金 (#D97706 / #F59E0B) 點綴 + 雅緻微卡片 (#F8FAFC)
+ * 全面消除雜亂彩虹配色，提供最高標準之商務主管與建築智庫視覺體驗
  */
 
+const THEME = {
+  // Header 曜石黑基底
+  headerBg: '#0A0F1D',
+  headerBorder: '#1E293B',
+
+  // 標籤 Pill Badge (香檳金質感)
+  badgeBg: '#2A2012',
+  badgeText: '#F59E0B',
+  badgeSub: '#94A3B8',
+  headerTitle: '#FFFFFF',
+
+  // 內容主背景
+  bodyBg: '#FFFFFF',
+
+  // 模組微卡片 (統一低飽和、高級感)
+  cardBg: '#F8FAFC',
+  cardBorder: '#E2E8F0',
+  cardHighlightBg: '#F1F5F9',
+  cardHighlightBorder: '#CBD5E1',
+
+  // 文字層級
+  titleText: '#0F172A',
+  bodyText: '#334155',
+  subText: '#64748B',
+  mutedText: '#94A3B8',
+
+  // 點綴色彩 (極簡 2 色系：香檳金、石板灰)
+  accentGold: '#D97706',
+  accentGoldBg: '#FEF3C7',
+  accentGoldText: '#92400E',
+
+  accentSlate: '#475569',
+  accentSlateBg: '#F1F5F9',
+
+  // 按鈕色彩
+  btnPrimaryBg: '#0F172A',
+  btnPrimaryText: '#FFFFFF',
+  btnGoldBg: '#D97706',
+  btnSecondaryBg: '#F1F5F9',
+  btnSecondaryText: '#1E293B',
+};
+
 /**
- * 產生常駐底部 LINE Quick Reply 快捷按鈕列 (涵蓋記事、統整、問答、新聞、選單)
+ * 產生常駐底部 LINE Quick Reply 快捷按鈕列
  */
 function getQuickReply() {
   const items = [
@@ -70,7 +112,6 @@ function getQuickReply() {
   return { items };
 }
 
-
 /**
  * 建立 YouTube / 影片精華 Flex 卡片
  */
@@ -86,7 +127,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
         layout: 'vertical',
         width: '20px',
         height: '20px',
-        backgroundColor: '#FEE2E2',
+        backgroundColor: THEME.accentGoldBg,
         cornerRadius: '6px',
         alignItems: 'center',
         justifyContent: 'center',
@@ -96,7 +137,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
             text: `${idx + 1}`,
             size: 'xxs',
             weight: 'bold',
-            color: '#E11D48',
+            color: THEME.accentGoldText,
             align: 'center',
           },
         ],
@@ -105,7 +146,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
         type: 'text',
         text: p,
         size: 'sm',
-        color: '#1E293B',
+        color: THEME.bodyText,
         flex: 1,
         wrap: true,
       },
@@ -114,17 +155,11 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
 
   const bodyContents = [
     {
-      type: 'box',
-      layout: 'horizontal',
-      contents: [
-        {
-          type: 'text',
-          text: '📌 核心精華重點',
-          size: 'sm',
-          weight: 'bold',
-          color: '#E11D48',
-        },
-      ],
+      type: 'text',
+      text: '📌 核心重點精華',
+      size: 'xs',
+      weight: 'bold',
+      color: THEME.accentGold,
     },
     ...pointContents,
   ];
@@ -134,36 +169,30 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
       {
         type: 'separator',
         margin: 'lg',
-        color: '#E2E8F0',
+        color: THEME.cardBorder,
       },
       {
         type: 'box',
         layout: 'vertical',
         margin: 'md',
         paddingAll: '12px',
-        backgroundColor: '#FFFBEB',
+        backgroundColor: THEME.cardBg,
         cornerRadius: '10px',
         borderWidth: '1px',
-        borderColor: '#FDE68A',
+        borderColor: THEME.cardBorder,
         contents: [
           {
-            type: 'box',
-            layout: 'horizontal',
-            contents: [
-              {
-                type: 'text',
-                text: '💡 AI 智庫補充與延伸脈絡',
-                size: 'xs',
-                weight: 'bold',
-                color: '#B45309',
-              },
-            ],
+            type: 'text',
+            text: '💡 AI 智庫補充與延伸脈絡',
+            size: 'xs',
+            weight: 'bold',
+            color: THEME.titleText,
           },
           {
             type: 'text',
             text: supplement,
             size: 'xs',
-            color: '#78350F',
+            color: THEME.subText,
             wrap: true,
             margin: 'sm',
           },
@@ -178,7 +207,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -188,7 +217,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#3F151B',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -200,7 +229,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
                   text: '🎬 YOUTUBE INSIGHT',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#FDA4AF',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -208,7 +237,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
               type: 'text',
               text: '影音智慧解析',
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -219,7 +248,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
           text: title || 'YouTube 影片',
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           wrap: true,
           margin: 'md',
         },
@@ -228,7 +257,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       contents: bodyContents,
     },
@@ -238,7 +267,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
     bubble.footer = {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
         {
@@ -250,7 +279,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
           },
           style: 'primary',
           height: 'sm',
-          color: '#E11D48',
+          color: THEME.btnPrimaryBg,
         },
       ],
     };
@@ -272,10 +301,10 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
     {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#F0FDF4',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#BBF7D0',
+      borderColor: THEME.cardBorder,
       paddingAll: '12px',
       contents: [
         {
@@ -283,13 +312,13 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
           text: '📌 網頁核心速讀',
           size: 'xs',
           weight: 'bold',
-          color: '#047857',
+          color: THEME.titleText,
         },
         {
           type: 'text',
           text: summary,
           size: 'sm',
-          color: '#064E3B',
+          color: THEME.bodyText,
           wrap: true,
           margin: 'sm',
         },
@@ -303,23 +332,23 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
       layout: 'vertical',
       margin: 'md',
       paddingAll: '12px',
-      backgroundColor: '#ECFEFF',
+      backgroundColor: THEME.cardHighlightBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#A5F3FC',
+      borderColor: THEME.cardHighlightBorder,
       contents: [
         {
           type: 'text',
           text: '💡 延伸背景與智庫知識',
           size: 'xs',
           weight: 'bold',
-          color: '#0E7490',
+          color: THEME.titleText,
         },
         {
           type: 'text',
           text: supplement,
           size: 'xs',
-          color: '#155E75',
+          color: THEME.subText,
           wrap: true,
           margin: 'sm',
         },
@@ -333,7 +362,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -343,7 +372,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#064E3B',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -355,7 +384,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
                   text: '🌐 WEB ARTICLE',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#6EE7B7',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -363,7 +392,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
               type: 'text',
               text: '網頁智能導讀',
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -374,7 +403,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
           text: title || '網頁連結',
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           wrap: true,
           margin: 'md',
         },
@@ -383,7 +412,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       contents: bodyContents,
     },
@@ -393,7 +422,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
     bubble.footer = {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
         {
@@ -405,7 +434,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
           },
           style: 'primary',
           height: 'sm',
-          color: '#059669',
+          color: THEME.btnPrimaryBg,
         },
       ],
     };
@@ -433,13 +462,13 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
           text: '🖼️ 畫面主體解析',
           size: 'xs',
           weight: 'bold',
-          color: '#7C3AED',
+          color: THEME.titleText,
         },
         {
           type: 'text',
           text: description,
           size: 'sm',
-          color: '#1E293B',
+          color: THEME.bodyText,
           wrap: true,
           margin: 'sm',
         },
@@ -453,23 +482,23 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
       layout: 'vertical',
       margin: 'md',
       paddingAll: '10px',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '8px',
       borderWidth: '1px',
-      borderColor: '#CBD5E1',
+      borderColor: THEME.cardBorder,
       contents: [
         {
           type: 'text',
           text: '🔍 提取文字與數據資訊',
           size: 'xxs',
           weight: 'bold',
-          color: '#475569',
+          color: THEME.subText,
         },
         {
           type: 'text',
           text: ocr,
           size: 'xs',
-          color: '#0F172A',
+          color: THEME.titleText,
           wrap: true,
           margin: 'xs',
         },
@@ -482,30 +511,30 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
       {
         type: 'separator',
         margin: 'lg',
-        color: '#E2E8F0',
+        color: THEME.cardBorder,
       },
       {
         type: 'box',
         layout: 'vertical',
         margin: 'md',
         paddingAll: '12px',
-        backgroundColor: '#FAF5FF',
+        backgroundColor: THEME.cardHighlightBg,
         cornerRadius: '10px',
         borderWidth: '1px',
-        borderColor: '#E9D5FF',
+        borderColor: THEME.cardHighlightBorder,
         contents: [
           {
             type: 'text',
             text: '💡 專業洞察與補充建議',
             size: 'xs',
             weight: 'bold',
-            color: '#7E22CE',
+            color: THEME.titleText,
           },
           {
             type: 'text',
             text: supplement,
             size: 'xs',
-            color: '#581C87',
+            color: THEME.subText,
             wrap: true,
             margin: 'sm',
           },
@@ -520,7 +549,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -530,7 +559,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#3B0764',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -542,7 +571,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
                   text: '👁️ VISION & OCR',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#D8B4FE',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -550,7 +579,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
               type: 'text',
               text: '影像智慧辨識',
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -561,7 +590,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
           text: '圖片內容與數據洞察',
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           margin: 'md',
         },
       ],
@@ -569,7 +598,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       contents: bodyContents,
     },
@@ -593,7 +622,7 @@ function createAudioFlex({ transcript = '' }) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -603,7 +632,7 @@ function createAudioFlex({ transcript = '' }) {
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#1E1B4B',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -615,7 +644,7 @@ function createAudioFlex({ transcript = '' }) {
                   text: '🎙️ AUDIO TRANSCRIPT',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#A5B4FC',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -623,7 +652,7 @@ function createAudioFlex({ transcript = '' }) {
               type: 'text',
               text: 'Whisper AI 辨識',
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -634,7 +663,7 @@ function createAudioFlex({ transcript = '' }) {
           text: '語音訊息逐字稿',
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           margin: 'md',
         },
       ],
@@ -642,16 +671,16 @@ function createAudioFlex({ transcript = '' }) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       contents: [
         {
           type: 'box',
           layout: 'vertical',
-          backgroundColor: '#EEF2FF',
+          backgroundColor: THEME.cardBg,
           cornerRadius: '10px',
           borderWidth: '1px',
-          borderColor: '#C7D2FE',
+          borderColor: THEME.cardBorder,
           paddingAll: '12px',
           contents: [
             {
@@ -659,13 +688,13 @@ function createAudioFlex({ transcript = '' }) {
               text: '📝 語音轉譯內容',
               size: 'xs',
               weight: 'bold',
-              color: '#4338CA',
+              color: THEME.titleText,
             },
             {
               type: 'text',
               text: transcript || '（無內容）',
               size: 'sm',
-              color: '#1E1B4B',
+              color: THEME.bodyText,
               wrap: true,
               margin: 'sm',
             },
@@ -693,48 +722,24 @@ function parseSummarySections(summaryText) {
       pattern: /📊|討論主軸|核心議題/,
       title: '討論主軸與核心議題',
       badge: 'TOPICS',
-      color: '#0284C7',
-      bg: '#F0F9FF',
-      border: '#BAE6FD',
-      bulletBg: '#E0F2FE',
-      bulletColor: '#0284C7',
-      titleColor: '#0369A1',
     },
     {
       key: 'decisions',
       pattern: /💡|重要結論|關鍵決策/,
       title: '重要結論與關鍵決策',
       badge: 'DECISIONS',
-      color: '#059669',
-      bg: '#ECFDF5',
-      border: '#A7F3D0',
-      bulletBg: '#D1FAE5',
-      bulletColor: '#059669',
-      titleColor: '#047857',
     },
     {
       key: 'insights',
       pattern: /📚|智庫補充|延伸洞察/,
       title: 'AI 智庫補充與延伸洞察',
       badge: 'INSIGHTS',
-      color: '#D97706',
-      bg: '#FFFBEB',
-      border: '#FDE68A',
-      bulletBg: '#FEF3C7',
-      bulletColor: '#D97706',
-      titleColor: '#B45309',
     },
     {
       key: 'todos',
       pattern: /🎯|待辦事項|行動清單/,
       title: '待辦事項與行動清單',
       badge: 'ACTION ITEMS',
-      color: '#E11D48',
-      bg: '#FFF1F2',
-      border: '#FECDD3',
-      bulletBg: '#FFE4E6',
-      bulletColor: '#E11D48',
-      titleColor: '#BE123C',
     },
   ];
 
@@ -766,12 +771,6 @@ function parseSummarySections(summaryText) {
             key: 'general',
             title: '會議與對話摘要',
             badge: 'SUMMARY',
-            color: '#475569',
-            bg: '#F8FAFC',
-            border: '#E2E8F0',
-            bulletBg: '#F1F5F9',
-            bulletColor: '#475569',
-            titleColor: '#334155',
           },
           title: '會議與對話摘要',
           items: [],
@@ -789,7 +788,7 @@ function parseSummarySections(summaryText) {
 }
 
 /**
- * 建立對話全貌整合 Flex 卡片 (結構化高階模組卡 + 快捷按鈕)
+ * 建立對話全貌整合 Flex 卡片
  */
 function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', summaryText = '' }) {
   const sections = parseSummarySections(summaryText);
@@ -805,7 +804,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
           type: 'text',
           text: '•',
           size: 'sm',
-          color: sec.def.bulletColor,
+          color: THEME.accentGold,
           flex: 0,
           weight: 'bold',
         },
@@ -813,7 +812,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
           type: 'text',
           text: item,
           size: 'xs',
-          color: '#1E293B',
+          color: THEME.bodyText,
           flex: 1,
           wrap: true,
         },
@@ -825,30 +824,42 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
       layout: 'vertical',
       margin: secIdx === 0 ? 'none' : 'md',
       paddingAll: '12px',
-      backgroundColor: sec.def.bg,
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: sec.def.border,
+      borderColor: THEME.cardBorder,
       contents: [
         {
           type: 'box',
           layout: 'horizontal',
           contents: [
             {
+              type: 'box',
+              layout: 'horizontal',
+              backgroundColor: THEME.badgeBg,
+              cornerRadius: 'md',
+              paddingStart: '6px',
+              paddingEnd: '6px',
+              paddingTop: '2px',
+              paddingBottom: '2px',
+              contents: [
+                {
+                  type: 'text',
+                  text: sec.def.badge || 'REPORT',
+                  size: 'xxs',
+                  weight: 'bold',
+                  color: THEME.badgeText,
+                },
+              ],
+            },
+            {
               type: 'text',
               text: sec.title,
               size: 'xs',
               weight: 'bold',
-              color: sec.def.titleColor,
-              flex: 1,
-            },
-            {
-              type: 'text',
-              text: sec.def.badge,
-              size: 'xxs',
-              color: sec.def.color,
-              align: 'end',
-              weight: 'bold',
+              color: THEME.titleText,
+              margin: 'sm',
+              gravity: 'center',
             },
           ],
         },
@@ -857,26 +868,13 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
     };
   });
 
-  const bodyContents =
-    sectionCards.length > 0
-      ? sectionCards
-      : [
-          {
-            type: 'text',
-            text: summaryText,
-            size: 'sm',
-            color: '#1E293B',
-            wrap: true,
-          },
-        ];
-
   const bubble = {
     type: 'bubble',
     size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -886,7 +884,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#0C4A6E',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -895,10 +893,10 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
               contents: [
                 {
                   type: 'text',
-                  text: '📋 AI EXECUTIVE BRIEF',
+                  text: '📋 EXECUTIVE SUMMARY',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#7DD3FC',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -906,7 +904,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
               type: 'text',
               text: new Date().toLocaleDateString('zh-TW'),
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -917,7 +915,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
           text: title,
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           margin: 'md',
         },
       ],
@@ -925,27 +923,38 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
-      contents: bodyContents,
+      contents:
+        sectionCards.length > 0
+          ? sectionCards
+          : [
+              {
+                type: 'text',
+                text: summaryText,
+                size: 'sm',
+                color: THEME.bodyText,
+                wrap: true,
+              },
+            ],
     },
     footer: {
       type: 'box',
       layout: 'horizontal',
       spacing: 'sm',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
         {
           type: 'button',
           action: {
             type: 'message',
-            label: '📰 今日建築新聞',
+            label: '📰 今日新聞',
             text: '今日新聞',
           },
           style: 'primary',
           height: 'sm',
-          color: '#0284C7',
+          color: THEME.btnPrimaryBg,
           flex: 1,
         },
         {
@@ -965,54 +974,54 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
 
   return {
     type: 'flex',
-    altText: title,
+    altText: `📋 對話深度總結報告 (${new Date().toLocaleDateString('zh-TW')})`,
     contents: bubble,
     quickReply: getQuickReply(),
   };
 }
 
 /**
- * 建立每日建築與營造產業新聞 Flex 卡片 (全互動式按鈕 + 次次更新支援)
+ * 建立今日建築情報 Flex 卡片 (統一黑曜金簡報卡)
  */
-function createConstructionNewsFlex({
-  date = '',
-  categoryName = '即時前瞻全訊',
-  overview = '',
-  items = [],
-}) {
-  const currentDate =
-    date ||
-    new Date().toLocaleDateString('zh-TW', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
+function createConstructionNewsFlex(digest) {
+  const dateStr = digest.date || new Date().toLocaleDateString('zh-TW');
+  const categoryTitle = digest.categoryName || '綜合全訊';
+
+  const bodyContents = [];
+
+  // 今日核心概述
+  if (digest.overview) {
+    bodyContents.push({
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: THEME.cardHighlightBg,
+      cornerRadius: '10px',
+      borderWidth: '1px',
+      borderColor: THEME.cardHighlightBorder,
+      paddingAll: '12px',
+      contents: [
+        {
+          type: 'text',
+          text: '📌 產業焦點總覽',
+          size: 'xs',
+          weight: 'bold',
+          color: THEME.titleText,
+        },
+        {
+          type: 'text',
+          text: digest.overview,
+          size: 'xs',
+          color: THEME.bodyText,
+          wrap: true,
+          margin: 'xs',
+        },
+      ],
     });
+  }
 
-  const newsCards = items.map((item, idx) => {
-    let catBg = '#FEF3C7';
-    let catColor = '#B45309';
-    if (item.category?.includes('綠') || item.category?.includes('ESG')) {
-      catBg = '#D1FAE5';
-      catColor = '#047857';
-    } else if (item.category?.includes('設計') || item.category?.includes('前瞻')) {
-      catBg = '#E0E7FF';
-      catColor = '#4338CA';
-    } else if (item.category?.includes('工程') || item.category?.includes('重大')) {
-      catBg = '#FFEDD5';
-      catColor = '#C2410C';
-    } else if (
-      item.category?.includes('法規') ||
-      item.category?.includes('都更') ||
-      item.category?.includes('房市')
-    ) {
-      catBg = '#FCE7F3';
-      catColor = '#BE185D';
-    } else if (item.category?.includes('智') || item.category?.includes('科技')) {
-      catBg = '#E0F2FE';
-      catColor = '#0369A1';
-    }
-
-    const cardContents = [
+  // 新聞條目微卡片
+  (digest.items || []).forEach((item, idx) => {
+    const newsCardContents = [
       {
         type: 'box',
         layout: 'horizontal',
@@ -1020,7 +1029,7 @@ function createConstructionNewsFlex({
           {
             type: 'box',
             layout: 'horizontal',
-            backgroundColor: catBg,
+            backgroundColor: THEME.badgeBg,
             cornerRadius: 'md',
             paddingStart: '6px',
             paddingEnd: '6px',
@@ -1029,18 +1038,18 @@ function createConstructionNewsFlex({
             contents: [
               {
                 type: 'text',
-                text: item.category || '🏗️ 產業快訊',
+                text: item.category || '🏗️ 產業即時',
                 size: 'xxs',
                 weight: 'bold',
-                color: catColor,
+                color: THEME.badgeText,
               },
             ],
           },
           {
             type: 'text',
-            text: item.source || '即時情報',
+            text: item.source || '媒體報導',
             size: 'xxs',
-            color: '#94A3B8',
+            color: THEME.subText,
             align: 'end',
             gravity: 'center',
           },
@@ -1051,7 +1060,7 @@ function createConstructionNewsFlex({
         text: item.title,
         weight: 'bold',
         size: 'sm',
-        color: '#0F172A',
+        color: THEME.titleText,
         wrap: true,
         margin: 'sm',
       },
@@ -1059,134 +1068,84 @@ function createConstructionNewsFlex({
         type: 'text',
         text: item.summary,
         size: 'xs',
-        color: '#334155',
+        color: THEME.bodyText,
         wrap: true,
         margin: 'xs',
       },
     ];
 
+    // 智庫觀點
     if (item.insight) {
-      cardContents.push({
+      newsCardContents.push({
         type: 'box',
-        layout: 'horizontal',
-        spacing: 'xs',
+        layout: 'vertical',
         margin: 'sm',
+        paddingAll: '8px',
+        backgroundColor: '#FFFFFF',
+        cornerRadius: '6px',
+        borderWidth: '1px',
+        borderColor: THEME.cardBorder,
         contents: [
           {
             type: 'text',
-            text: '💡 觀點：',
+            text: `💡 智庫解讀：${item.insight}`,
             size: 'xxs',
-            weight: 'bold',
-            color: '#D97706',
-            flex: 0,
-          },
-          {
-            type: 'text',
-            text: item.insight,
-            size: 'xxs',
-            color: '#78350F',
+            color: THEME.subText,
             wrap: true,
-            flex: 1,
           },
         ],
       });
     }
 
-    // 互動按鈕列：閱讀原文 + AI 深度剖析
-    const buttonRowContents = [];
+    // 操作按鈕列
+    const actionButtons = [];
     if (item.url) {
-      buttonRowContents.push({
+      actionButtons.push({
         type: 'button',
         action: {
           type: 'uri',
-          label: '🔗 原文報導',
+          label: '🔗 原文',
           uri: item.url,
         },
-        style: 'link',
+        style: 'secondary',
         height: 'sm',
-        color: '#0284C7',
         flex: 1,
       });
     }
-    buttonRowContents.push({
+
+    actionButtons.push({
       type: 'button',
       action: {
         type: 'message',
-        label: '💡 AI 深度剖析',
+        label: '💡 深度剖析',
         text: `剖析新聞: ${item.title}`,
       },
-      style: 'link',
+      style: 'primary',
       height: 'sm',
-      color: '#B45309',
+      color: THEME.btnPrimaryBg,
       flex: 1,
     });
 
-    cardContents.push({
+    newsCardContents.push({
       type: 'box',
       layout: 'horizontal',
-      margin: 'xs',
-      contents: buttonRowContents,
+      spacing: 'sm',
+      margin: 'sm',
+      contents: actionButtons,
     });
 
-    return {
+    bodyContents.push({
       type: 'box',
       layout: 'vertical',
-      margin: idx === 0 ? 'none' : 'md',
+      margin: idx === 0 && !digest.overview ? 'none' : 'md',
       paddingAll: '12px',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#E2E8F0',
-      contents: cardContents,
-    };
+      borderColor: THEME.cardBorder,
+      contents: newsCardContents,
+    });
   });
-
-  const bodyContents = [];
-
-  if (overview) {
-    bodyContents.push({
-      type: 'box',
-      layout: 'vertical',
-      backgroundColor: '#FFFBEB',
-      cornerRadius: '10px',
-      borderWidth: '1px',
-      borderColor: '#FDE68A',
-      paddingAll: '12px',
-      contents: [
-        {
-          type: 'text',
-          text: '📈 今日產業核心脈動',
-          size: 'xs',
-          weight: 'bold',
-          color: '#B45309',
-        },
-        {
-          type: 'text',
-          text: overview,
-          size: 'xs',
-          color: '#78350F',
-          wrap: true,
-          margin: 'sm',
-        },
-      ],
-    });
-  }
-
-  if (newsCards.length > 0) {
-    if (overview) {
-      bodyContents.push({
-        type: 'separator',
-        margin: 'md',
-        color: '#E2E8F0',
-      });
-    }
-    bodyContents.push({
-      type: 'box',
-      layout: 'vertical',
-      margin: 'md',
-      contents: newsCards,
-    });
-  }
 
   const bubble = {
     type: 'bubble',
@@ -1194,7 +1153,7 @@ function createConstructionNewsFlex({
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -1204,7 +1163,7 @@ function createConstructionNewsFlex({
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#451A03',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -1213,18 +1172,18 @@ function createConstructionNewsFlex({
               contents: [
                 {
                   type: 'text',
-                  text: '🏗️ ARCHITECTURE & CONSTRUCTION',
+                  text: '🏗️ ARCHITECTURE BRIEF',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#FDE68A',
+                  color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
-              text: `${currentDate}`,
+              text: dateStr,
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -1232,10 +1191,10 @@ function createConstructionNewsFlex({
         },
         {
           type: 'text',
-          text: `今日建築與營造情報 · ${categoryName}`,
+          text: `今日建築情報 · ${categoryTitle}`,
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           margin: 'md',
         },
       ],
@@ -1243,46 +1202,39 @@ function createConstructionNewsFlex({
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       contents: bodyContents,
     },
     footer: {
       type: 'box',
-      layout: 'vertical',
+      layout: 'horizontal',
       spacing: 'sm',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
         {
-          type: 'box',
-          layout: 'horizontal',
-          spacing: 'sm',
-          contents: [
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '🔄 換下一批 (不重複)',
-                text: '換新聞',
-              },
-              style: 'primary',
-              height: 'sm',
-              color: '#D97706',
-              flex: 2,
-            },
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '🎛️ 選單',
-                text: '選單',
-              },
-              style: 'secondary',
-              height: 'sm',
-              flex: 1,
-            },
-          ],
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '🔄 換下一批 (不重複)',
+            text: '換新聞',
+          },
+          style: 'primary',
+          height: 'sm',
+          color: THEME.btnGoldBg,
+          flex: 1,
+        },
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '🎛️ 選單',
+            text: '選單',
+          },
+          style: 'secondary',
+          height: 'sm',
+          flex: 1,
         },
       ],
     },
@@ -1290,14 +1242,14 @@ function createConstructionNewsFlex({
 
   return {
     type: 'flex',
-    altText: `🏗️ 今日建築情報 · ${categoryName} (${currentDate})`,
+    altText: `🏗️ 今日建築情報 · ${categoryTitle} (${dateStr})`,
     contents: bubble,
     quickReply: getQuickReply(),
   };
 }
 
 /**
- * 建立 🎛️ 智能控制台 / 快捷功能選單 Flex 卡片 (包含記事、統整、問答、新聞)
+ * 建立 🎛️ 智能控制台 / 快捷功能選單 Flex 卡片 (統一黑曜金)
  */
 function createMenuFlex() {
   const bubble = {
@@ -1306,7 +1258,7 @@ function createMenuFlex() {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -1316,7 +1268,7 @@ function createMenuFlex() {
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#1E293B',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -1328,7 +1280,7 @@ function createMenuFlex() {
                   text: '⚡ COMMAND HUB',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#38BDF8',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -1336,7 +1288,7 @@ function createMenuFlex() {
               type: 'text',
               text: '全功能快捷控制台',
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -1347,14 +1299,14 @@ function createMenuFlex() {
           text: '🏛️ AI 建築智庫與智慧特助',
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           margin: 'md',
         },
         {
           type: 'text',
           text: '點擊下方按鈕即可立即取得最新資訊，無需手動輸入。',
           size: 'xs',
-          color: '#94A3B8',
+          color: THEME.badgeSub,
           margin: 'xs',
           wrap: true,
         },
@@ -1363,7 +1315,7 @@ function createMenuFlex() {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       spacing: 'md',
       contents: [
@@ -1373,7 +1325,7 @@ function createMenuFlex() {
           text: '📝 智能記事與全方位統整',
           size: 'xs',
           weight: 'bold',
-          color: '#64748B',
+          color: THEME.titleText,
         },
         {
           type: 'box',
@@ -1389,7 +1341,7 @@ function createMenuFlex() {
               },
               style: 'primary',
               height: 'sm',
-              color: '#E11D48',
+              color: THEME.btnGoldBg,
               flex: 1,
             },
             {
@@ -1401,7 +1353,7 @@ function createMenuFlex() {
               },
               style: 'primary',
               height: 'sm',
-              color: '#0284C7',
+              color: THEME.btnPrimaryBg,
               flex: 1,
             },
           ],
@@ -1410,7 +1362,6 @@ function createMenuFlex() {
           type: 'box',
           layout: 'horizontal',
           spacing: 'sm',
-          margin: 'sm',
           contents: [
             {
               type: 'button',
@@ -1419,9 +1370,8 @@ function createMenuFlex() {
                 label: '📊 全方位智能統整',
                 text: '智能統整',
               },
-              style: 'primary',
+              style: 'secondary',
               height: 'sm',
-              color: '#059669',
               flex: 1,
             },
             {
@@ -1440,7 +1390,7 @@ function createMenuFlex() {
         {
           type: 'separator',
           margin: 'md',
-          color: '#E2E8F0',
+          color: THEME.cardBorder,
         },
         // 區塊 2: 即時新聞與專題
         {
@@ -1448,7 +1398,7 @@ function createMenuFlex() {
           text: '📰 建築與營造產業情報（次次更新）',
           size: 'xs',
           weight: 'bold',
-          color: '#64748B',
+          color: THEME.titleText,
         },
         {
           type: 'box',
@@ -1475,7 +1425,7 @@ function createMenuFlex() {
               },
               style: 'primary',
               height: 'sm',
-              color: '#D97706',
+              color: THEME.btnGoldBg,
               flex: 1,
             },
           ],
@@ -1541,15 +1491,15 @@ function createMenuFlex() {
         {
           type: 'separator',
           margin: 'md',
-          color: '#E2E8F0',
+          color: THEME.cardBorder,
         },
         // 區塊 3: 對話紀錄與管理
         {
           type: 'text',
-          text: '📋 對話管理與深度智庫',
+          text: '📋 對話管理與工具',
           size: 'xs',
           weight: 'bold',
-          color: '#64748B',
+          color: THEME.titleText,
         },
         {
           type: 'box',
@@ -1585,14 +1535,14 @@ function createMenuFlex() {
     footer: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '10px',
       contents: [
         {
           type: 'text',
           text: '💡 點擊「快捷記一筆」開啟範本，或直接輸入「記下：...」',
           size: 'xxs',
-          color: '#94A3B8',
+          color: THEME.mutedText,
           align: 'center',
         },
       ],
@@ -1607,9 +1557,8 @@ function createMenuFlex() {
   };
 }
 
-
 /**
- * 建立新聞深度智庫剖析 Flex 卡片 (多維度模組化戰略卡)
+ * 建立新聞深度智庫剖析 Flex 卡片 (統一黑曜金)
  */
 function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) {
   const analysis = data || {
@@ -1621,161 +1570,41 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
     strategyAdvice: '',
   };
 
-  const bodyContents = [];
+  const sections = [
+    { title: '📌 事件核心與背景脈絡', text: analysis.context },
+    { title: '🏗️ 工程工法與設計面衝擊', text: analysis.techImpact },
+    { title: '📜 法規政策與制度規範影響', text: analysis.policyImpact },
+    { title: '📈 產業供應鏈與市場商機', text: analysis.marketOpportunity },
+    { title: '💡 專家因應策略建議', text: analysis.strategyAdvice, highlight: true },
+  ].filter((s) => Boolean(s.text));
 
-  // 1. 事件核心脈絡
-  if (analysis.context) {
-    bodyContents.push({
-      type: 'box',
-      layout: 'vertical',
-      backgroundColor: '#F8FAFC',
-      cornerRadius: '10px',
-      borderWidth: '1px',
-      borderColor: '#E2E8F0',
-      paddingAll: '12px',
-      contents: [
-        {
-          type: 'text',
-          text: '📌 事件核心與背景脈絡',
-          size: 'xs',
-          weight: 'bold',
-          color: '#334155',
-        },
-        {
-          type: 'text',
-          text: analysis.context,
-          size: 'xs',
-          color: '#1E293B',
-          wrap: true,
-          margin: 'sm',
-        },
-      ],
-    });
-  }
-
-  // 2. 工程技術與工法衝擊
-  if (analysis.techImpact) {
-    bodyContents.push({
-      type: 'box',
-      layout: 'vertical',
-      margin: 'md',
-      backgroundColor: '#FFF7ED',
-      cornerRadius: '10px',
-      borderWidth: '1px',
-      borderColor: '#FED7AA',
-      paddingAll: '12px',
-      contents: [
-        {
-          type: 'text',
-          text: '🏗️ 工程工法與設計面衝擊',
-          size: 'xs',
-          weight: 'bold',
-          color: '#C2410C',
-        },
-        {
-          type: 'text',
-          text: analysis.techImpact,
-          size: 'xs',
-          color: '#7C2D12',
-          wrap: true,
-          margin: 'sm',
-        },
-      ],
-    });
-  }
-
-  // 3. 法規政策與市場影響
-  if (analysis.policyImpact) {
-    bodyContents.push({
-      type: 'box',
-      layout: 'vertical',
-      margin: 'md',
-      backgroundColor: '#FDF2F8',
-      cornerRadius: '10px',
-      borderWidth: '1px',
-      borderColor: '#FBCFE8',
-      paddingAll: '12px',
-      contents: [
-        {
-          type: 'text',
-          text: '📜 法規政策與制度規範影響',
-          size: 'xs',
-          weight: 'bold',
-          color: '#BE185D',
-        },
-        {
-          type: 'text',
-          text: analysis.policyImpact,
-          size: 'xs',
-          color: '#831843',
-          wrap: true,
-          margin: 'sm',
-        },
-      ],
-    });
-  }
-
-  // 4. 產業商機與供應鏈
-  if (analysis.marketOpportunity) {
-    bodyContents.push({
-      type: 'box',
-      layout: 'vertical',
-      margin: 'md',
-      backgroundColor: '#F0FDF4',
-      cornerRadius: '10px',
-      borderWidth: '1px',
-      borderColor: '#BBF7D0',
-      paddingAll: '12px',
-      contents: [
-        {
-          type: 'text',
-          text: '📈 產業供應鏈與市場商機',
-          size: 'xs',
-          weight: 'bold',
-          color: '#047857',
-        },
-        {
-          type: 'text',
-          text: analysis.marketOpportunity,
-          size: 'xs',
-          color: '#064E3B',
-          wrap: true,
-          margin: 'sm',
-        },
-      ],
-    });
-  }
-
-  // 5. 專家策略因應建議
-  if (analysis.strategyAdvice) {
-    bodyContents.push({
-      type: 'box',
-      layout: 'vertical',
-      margin: 'md',
-      backgroundColor: '#EFF6FF',
-      cornerRadius: '10px',
-      borderWidth: '1px',
-      borderColor: '#BFDBFE',
-      paddingAll: '12px',
-      contents: [
-        {
-          type: 'text',
-          text: '💡 專家因應策略建議',
-          size: 'xs',
-          weight: 'bold',
-          color: '#1D4ED8',
-        },
-        {
-          type: 'text',
-          text: analysis.strategyAdvice,
-          size: 'xs',
-          color: '#1E3A8A',
-          wrap: true,
-          margin: 'sm',
-        },
-      ],
-    });
-  }
+  const bodyContents = sections.map((sec, idx) => ({
+    type: 'box',
+    layout: 'vertical',
+    margin: idx === 0 ? 'none' : 'md',
+    backgroundColor: sec.highlight ? THEME.cardHighlightBg : THEME.cardBg,
+    cornerRadius: '10px',
+    borderWidth: '1px',
+    borderColor: sec.highlight ? THEME.cardHighlightBorder : THEME.cardBorder,
+    paddingAll: '12px',
+    contents: [
+      {
+        type: 'text',
+        text: sec.title,
+        size: 'xs',
+        weight: 'bold',
+        color: THEME.titleText,
+      },
+      {
+        type: 'text',
+        text: sec.text,
+        size: 'xs',
+        color: THEME.bodyText,
+        wrap: true,
+        margin: 'sm',
+      },
+    ],
+  }));
 
   const bubble = {
     type: 'bubble',
@@ -1783,7 +1612,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -1793,7 +1622,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#451A03',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -1805,7 +1634,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
                   text: analysis.category || '💡 IN-DEPTH ANALYSIS',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#FDE68A',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -1813,7 +1642,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
               type: 'text',
               text: '智庫首席剖析',
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -1824,7 +1653,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
           text: title || '新聞深度剖析',
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           wrap: true,
           margin: 'md',
         },
@@ -1833,7 +1662,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       contents:
         bodyContents.length > 0
@@ -1843,7 +1672,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
                 type: 'text',
                 text: analysisText || analysis.rawText || '無剖析內容',
                 size: 'sm',
-                color: '#1E293B',
+                color: THEME.bodyText,
                 wrap: true,
               },
             ],
@@ -1852,7 +1681,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
       type: 'box',
       layout: 'horizontal',
       spacing: 'sm',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
         {
@@ -1864,7 +1693,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
           },
           style: 'primary',
           height: 'sm',
-          color: '#D97706',
+          color: THEME.btnGoldBg,
           flex: 1,
         },
         {
@@ -1891,7 +1720,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
 }
 
 /**
- * 建立 AI 顧問問答 Flex 卡片 (結構化高階解答卡)
+ * 建立 AI 顧問問答 Flex 卡片 (統一黑曜金)
  */
 function createAssistantFlex({ question = '', data = null, answer = '' }) {
   const result = data || {
@@ -1904,15 +1733,15 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
 
   const bodyContents = [];
 
-  // 1. 核心結論直接解答
+  // 1. 核心結論
   if (result.conclusion) {
     bodyContents.push({
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#F0FDF4',
+      backgroundColor: THEME.cardHighlightBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#BBF7D0',
+      borderColor: THEME.cardHighlightBorder,
       paddingAll: '12px',
       contents: [
         {
@@ -1920,13 +1749,13 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
           text: '💎 核心結論與策略解法',
           size: 'xs',
           weight: 'bold',
-          color: '#047857',
+          color: THEME.titleText,
         },
         {
           type: 'text',
           text: result.conclusion,
           size: 'sm',
-          color: '#064E3B',
+          color: THEME.titleText,
           weight: 'bold',
           wrap: true,
           margin: 'sm',
@@ -1947,7 +1776,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
           type: 'text',
           text: '•',
           size: 'sm',
-          color: '#0284C7',
+          color: THEME.accentGold,
           flex: 0,
           weight: 'bold',
         },
@@ -1955,7 +1784,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
           type: 'text',
           text: item,
           size: 'xs',
-          color: '#1E293B',
+          color: THEME.bodyText,
           flex: 1,
           wrap: true,
         },
@@ -1967,17 +1796,17 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
       layout: 'vertical',
       margin: 'md',
       paddingAll: '12px',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#E2E8F0',
+      borderColor: THEME.cardBorder,
       contents: [
         {
           type: 'text',
           text: '📐 關鍵法規與技術要點',
           size: 'xs',
           weight: 'bold',
-          color: '#0369A1',
+          color: THEME.titleText,
         },
         ...detailRows,
       ],
@@ -1990,10 +1819,10 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      backgroundColor: '#FFFBEB',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#FDE68A',
+      borderColor: THEME.cardBorder,
       paddingAll: '12px',
       contents: [
         {
@@ -2001,13 +1830,13 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
           text: '⚠️ 實務風險與避坑指南',
           size: 'xs',
           weight: 'bold',
-          color: '#B45309',
+          color: THEME.titleText,
         },
         {
           type: 'text',
           text: result.risks,
           size: 'xs',
-          color: '#78350F',
+          color: THEME.bodyText,
           wrap: true,
           margin: 'sm',
         },
@@ -2021,10 +1850,10 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      backgroundColor: '#EEF2FF',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#C7D2FE',
+      borderColor: THEME.cardBorder,
       paddingAll: '12px',
       contents: [
         {
@@ -2032,13 +1861,13 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
           text: '🚀 建議下一步行動',
           size: 'xs',
           weight: 'bold',
-          color: '#4338CA',
+          color: THEME.titleText,
         },
         {
           type: 'text',
           text: result.nextStep,
           size: 'xs',
-          color: '#1E1B4B',
+          color: THEME.bodyText,
           wrap: true,
           margin: 'sm',
         },
@@ -2052,7 +1881,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -2062,7 +1891,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#1E1B4B',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -2074,7 +1903,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
                   text: result.category || '🤖 AI ARCH-CONSULTANT',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#A5B4FC',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -2082,7 +1911,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
               type: 'text',
               text: '智庫特助解答',
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -2093,7 +1922,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
           text: question.length > 35 ? question.slice(0, 35) + '...' : question,
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           wrap: true,
           margin: 'md',
         },
@@ -2102,7 +1931,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       contents:
         bodyContents.length > 0
@@ -2112,7 +1941,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
                 type: 'text',
                 text: answer || result.rawText || '無解答內容',
                 size: 'sm',
-                color: '#1E293B',
+                color: THEME.bodyText,
                 wrap: true,
               },
             ],
@@ -2121,7 +1950,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
       type: 'box',
       layout: 'horizontal',
       spacing: 'sm',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
         {
@@ -2133,7 +1962,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
           },
           style: 'primary',
           height: 'sm',
-          color: '#0284C7',
+          color: THEME.btnPrimaryBg,
           flex: 1,
         },
         {
@@ -2159,28 +1988,11 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
   };
 }
 
-
 /**
- * 建立 📝 智能記事本與待辦清單 Flex 卡片
+ * 建立 📝 智能記事本與待辦清單 Flex 卡片 (統一黑曜金)
  */
 function createNotesFlex(notes = []) {
   const noteCards = notes.map((note, idx) => {
-    let catBg = '#EFF6FF';
-    let catColor = '#1D4ED8';
-    if (note.category?.includes('日') || note.category?.includes('會')) {
-      catBg = '#FDF2F8';
-      catColor = '#BE185D';
-    } else if (note.category?.includes('款') || note.category?.includes('價') || note.category?.includes('成本')) {
-      catBg = '#FEF3C7';
-      catColor = '#B45309';
-    } else if (note.category?.includes('工程') || note.category?.includes('技術')) {
-      catBg = '#FFEDD5';
-      catColor = '#C2410C';
-    } else if (note.category?.includes('法') || note.category?.includes('審')) {
-      catBg = '#F3E8FF';
-      catColor = '#7E22CE';
-    }
-
     const cardContents = [
       {
         type: 'box',
@@ -2189,7 +2001,7 @@ function createNotesFlex(notes = []) {
           {
             type: 'box',
             layout: 'horizontal',
-            backgroundColor: catBg,
+            backgroundColor: THEME.badgeBg,
             cornerRadius: 'md',
             paddingStart: '6px',
             paddingEnd: '6px',
@@ -2201,7 +2013,7 @@ function createNotesFlex(notes = []) {
                 text: `${idx + 1}. ${note.category || '📋 待辦'}`,
                 size: 'xxs',
                 weight: 'bold',
-                color: catColor,
+                color: THEME.badgeText,
               },
             ],
           },
@@ -2209,7 +2021,7 @@ function createNotesFlex(notes = []) {
             type: 'text',
             text: note.dueDate && note.dueDate !== '未指定' ? `⏳ ${note.dueDate}` : '進行中',
             size: 'xxs',
-            color: '#64748B',
+            color: THEME.subText,
             align: 'end',
             gravity: 'center',
           },
@@ -2220,7 +2032,7 @@ function createNotesFlex(notes = []) {
         text: note.title,
         weight: 'bold',
         size: 'sm',
-        color: '#0F172A',
+        color: THEME.titleText,
         wrap: true,
         margin: 'sm',
       },
@@ -2231,7 +2043,7 @@ function createNotesFlex(notes = []) {
         type: 'text',
         text: note.details,
         size: 'xs',
-        color: '#475569',
+        color: THEME.subText,
         wrap: true,
         margin: 'xs',
       });
@@ -2242,10 +2054,10 @@ function createNotesFlex(notes = []) {
       layout: 'vertical',
       margin: idx === 0 ? 'none' : 'md',
       paddingAll: '12px',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#E2E8F0',
+      borderColor: THEME.cardBorder,
       contents: cardContents,
     };
   });
@@ -2258,24 +2070,24 @@ function createNotesFlex(notes = []) {
             type: 'box',
             layout: 'vertical',
             paddingAll: '16px',
-            backgroundColor: '#F8FAFC',
+            backgroundColor: THEME.cardBg,
             cornerRadius: '10px',
             borderWidth: '1px',
-            borderColor: '#E2E8F0',
+            borderColor: THEME.cardBorder,
             contents: [
               {
                 type: 'text',
                 text: '📭 目前尚無待辦記事',
                 size: 'sm',
                 weight: 'bold',
-                color: '#64748B',
+                color: THEME.titleText,
                 align: 'center',
               },
               {
                 type: 'text',
-                text: '您可以直接傳送：「記下：下週三向建管處送審」或「幫我記：明天早上9點結構會勘」即可自動建立記事！',
+                text: '點選「➕ 記一筆」查看範本，或傳送「記下：下週三送審」即可建立！',
                 size: 'xs',
-                color: '#94A3B8',
+                color: THEME.subText,
                 wrap: true,
                 margin: 'sm',
                 align: 'center',
@@ -2290,7 +2102,7 @@ function createNotesFlex(notes = []) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -2300,7 +2112,7 @@ function createNotesFlex(notes = []) {
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#1E293B',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -2312,7 +2124,7 @@ function createNotesFlex(notes = []) {
                   text: '📝 SMART MEMO HUB',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#38BDF8',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -2320,7 +2132,7 @@ function createNotesFlex(notes = []) {
               type: 'text',
               text: `${notes.length} 項紀錄`,
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -2331,7 +2143,7 @@ function createNotesFlex(notes = []) {
           text: '📌 專屬智能記事本與待辦清單',
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           margin: 'md',
         },
       ],
@@ -2339,7 +2151,7 @@ function createNotesFlex(notes = []) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       contents: bodyContents,
     },
@@ -2347,7 +2159,7 @@ function createNotesFlex(notes = []) {
       type: 'box',
       layout: 'horizontal',
       spacing: 'sm',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
         {
@@ -2359,7 +2171,7 @@ function createNotesFlex(notes = []) {
           },
           style: 'primary',
           height: 'sm',
-          color: '#E11D48',
+          color: THEME.btnGoldBg,
           flex: 1,
         },
         {
@@ -2371,7 +2183,7 @@ function createNotesFlex(notes = []) {
           },
           style: 'primary',
           height: 'sm',
-          color: '#0284C7',
+          color: THEME.btnPrimaryBg,
           flex: 1,
         },
         {
@@ -2398,42 +2210,32 @@ function createNotesFlex(notes = []) {
 }
 
 /**
- * 建立 📝 智能記事快捷引導選單 / 範本 Flex 卡片 (一鍵點擊範本填入)
+ * 建立 📝 智能記事快捷引導選單 / 範本 Flex 卡片 (統一黑曜金)
  */
 function createNoteHelperFlex() {
   const templates = [
     {
       badge: '📅 日程會議',
-      badgeBg: '#FDF2F8',
-      badgeColor: '#BE185D',
       title: '工程會勘 / 會議日程',
       example: '記下：明天上午9點結構技師工地會勘',
     },
     {
       badge: '📋 待辦交辦',
-      badgeBg: '#EFF6FF',
-      badgeColor: '#1D4ED8',
       title: '法規送審 / 待辦交辦',
       example: '記下：下週三向建管處送審執照變更案',
     },
     {
       badge: '💰 報價成本',
-      badgeBg: '#FEF3C7',
-      badgeColor: '#B45309',
       title: '建材報價 / 發包成本',
       example: '備忘：鋼筋每噸最新報價 21,500 元',
     },
     {
       badge: '📐 工程技術',
-      badgeBg: '#FFEDD5',
-      badgeColor: '#C2410C',
       title: '工法規格 / 結構變更',
       example: '記下：連續壁厚度由70cm調整至80cm',
     },
     {
       badge: '💡 靈感策略',
-      badgeBg: '#F3E8FF',
-      badgeColor: '#7E22CE',
       title: '都更危老 / 獎勵策略',
       example: '備忘：爭取危老容積獎勵滿額40%',
     },
@@ -2444,10 +2246,10 @@ function createNoteHelperFlex() {
     layout: 'vertical',
     margin: idx === 0 ? 'none' : 'md',
     paddingAll: '10px',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: THEME.cardBg,
     cornerRadius: '10px',
     borderWidth: '1px',
-    borderColor: '#E2E8F0',
+    borderColor: THEME.cardBorder,
     contents: [
       {
         type: 'box',
@@ -2456,7 +2258,7 @@ function createNoteHelperFlex() {
           {
             type: 'box',
             layout: 'horizontal',
-            backgroundColor: tpl.badgeBg,
+            backgroundColor: THEME.badgeBg,
             cornerRadius: 'md',
             paddingStart: '6px',
             paddingEnd: '6px',
@@ -2468,7 +2270,7 @@ function createNoteHelperFlex() {
                 text: tpl.badge,
                 size: 'xxs',
                 weight: 'bold',
-                color: tpl.badgeColor,
+                color: THEME.badgeText,
               },
             ],
           },
@@ -2477,7 +2279,7 @@ function createNoteHelperFlex() {
             text: tpl.title,
             size: 'xs',
             weight: 'bold',
-            color: '#1E293B',
+            color: THEME.titleText,
             margin: 'sm',
             gravity: 'center',
           },
@@ -2503,7 +2305,7 @@ function createNoteHelperFlex() {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -2513,7 +2315,7 @@ function createNoteHelperFlex() {
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#1E293B',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -2525,7 +2327,7 @@ function createNoteHelperFlex() {
                   text: '⚡ QUICK NOTE ASSISTANT',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#38BDF8',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -2533,7 +2335,7 @@ function createNoteHelperFlex() {
               type: 'text',
               text: '一鍵快速記事',
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -2544,14 +2346,14 @@ function createNoteHelperFlex() {
           text: '📝 智能記事快捷選單 & 範本引導',
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           margin: 'md',
         },
         {
           type: 'text',
           text: '無需硬記指令！點擊下方任一範本即可直接填入或修改發送：',
           size: 'xs',
-          color: '#94A3B8',
+          color: THEME.badgeSub,
           margin: 'xs',
           wrap: true,
         },
@@ -2560,7 +2362,7 @@ function createNoteHelperFlex() {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '14px',
       contents: templateRows,
     },
@@ -2568,7 +2370,7 @@ function createNoteHelperFlex() {
       type: 'box',
       layout: 'horizontal',
       spacing: 'sm',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
         {
@@ -2580,7 +2382,7 @@ function createNoteHelperFlex() {
           },
           style: 'primary',
           height: 'sm',
-          color: '#0284C7',
+          color: THEME.btnPrimaryBg,
           flex: 1,
         },
         {
@@ -2607,7 +2409,7 @@ function createNoteHelperFlex() {
 }
 
 /**
- * 建立 📊 全方位智能統整報告 Flex 卡片
+ * 建立 📊 全方位智能統整報告 Flex 卡片 (統一黑曜金)
  */
 function createSynthesisFlex({ data = null, rawText = '' }) {
   const report = data || {
@@ -2626,10 +2428,10 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
     bodyContents.push({
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#F0FDF4',
+      backgroundColor: THEME.cardHighlightBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#BBF7D0',
+      borderColor: THEME.cardHighlightBorder,
       paddingAll: '12px',
       contents: [
         {
@@ -2637,13 +2439,13 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           text: '🎯 今日工作與對話推進總結',
           size: 'xs',
           weight: 'bold',
-          color: '#047857',
+          color: THEME.titleText,
         },
         {
           type: 'text',
           text: report.overview,
           size: 'xs',
-          color: '#064E3B',
+          color: THEME.bodyText,
           wrap: true,
           margin: 'sm',
         },
@@ -2663,7 +2465,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           type: 'text',
           text: '•',
           size: 'sm',
-          color: '#0284C7',
+          color: THEME.accentGold,
           flex: 0,
           weight: 'bold',
         },
@@ -2671,7 +2473,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           type: 'text',
           text: d,
           size: 'xs',
-          color: '#1E293B',
+          color: THEME.bodyText,
           flex: 1,
           wrap: true,
         },
@@ -2683,17 +2485,17 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       layout: 'vertical',
       margin: 'md',
       paddingAll: '12px',
-      backgroundColor: '#F0F9FF',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#BAE6FD',
+      borderColor: THEME.cardBorder,
       contents: [
         {
           type: 'text',
           text: '💡 重要決策與共識定案',
           size: 'xs',
           weight: 'bold',
-          color: '#0369A1',
+          color: THEME.titleText,
         },
         ...decisionRows,
       ],
@@ -2712,7 +2514,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           type: 'text',
           text: '✓',
           size: 'sm',
-          color: '#E11D48',
+          color: THEME.accentGold,
           flex: 0,
           weight: 'bold',
         },
@@ -2720,7 +2522,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           type: 'text',
           text: a,
           size: 'xs',
-          color: '#1E293B',
+          color: THEME.bodyText,
           flex: 1,
           wrap: true,
         },
@@ -2732,17 +2534,17 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       layout: 'vertical',
       margin: 'md',
       paddingAll: '12px',
-      backgroundColor: '#FFF1F2',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#FECDD3',
+      borderColor: THEME.cardBorder,
       contents: [
         {
           type: 'text',
           text: '📌 待辦與工程交辦清單',
           size: 'xs',
           weight: 'bold',
-          color: '#BE123C',
+          color: THEME.titleText,
         },
         ...actionRows,
       ],
@@ -2761,7 +2563,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           type: 'text',
           text: '▸',
           size: 'sm',
-          color: '#D97706',
+          color: THEME.accentGold,
           flex: 0,
           weight: 'bold',
         },
@@ -2769,7 +2571,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           type: 'text',
           text: k,
           size: 'xs',
-          color: '#1E293B',
+          color: THEME.bodyText,
           flex: 1,
           wrap: true,
         },
@@ -2781,17 +2583,17 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       layout: 'vertical',
       margin: 'md',
       paddingAll: '12px',
-      backgroundColor: '#FFFBEB',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#FDE68A',
+      borderColor: THEME.cardBorder,
       contents: [
         {
           type: 'text',
           text: '💰 關鍵數據與報價備忘',
           size: 'xs',
           weight: 'bold',
-          color: '#B45309',
+          color: THEME.titleText,
         },
         ...dataRows,
       ],
@@ -2804,10 +2606,10 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      backgroundColor: '#FEF2F2',
+      backgroundColor: THEME.cardBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#FCA5A5',
+      borderColor: THEME.cardBorder,
       paddingAll: '12px',
       contents: [
         {
@@ -2815,13 +2617,13 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           text: '⚠️ 工程介面與時程風險預警',
           size: 'xs',
           weight: 'bold',
-          color: '#B91C1C',
+          color: THEME.titleText,
         },
         {
           type: 'text',
           text: report.risksAndWatch,
           size: 'xs',
-          color: '#7F1D1D',
+          color: THEME.bodyText,
           wrap: true,
           margin: 'sm',
         },
@@ -2835,10 +2637,10 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      backgroundColor: '#EEF2FF',
+      backgroundColor: THEME.cardHighlightBg,
       cornerRadius: '10px',
       borderWidth: '1px',
-      borderColor: '#C7D2FE',
+      borderColor: THEME.cardHighlightBorder,
       paddingAll: '12px',
       contents: [
         {
@@ -2846,13 +2648,13 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           text: '🚀 總監級下一步推進戰略',
           size: 'xs',
           weight: 'bold',
-          color: '#4338CA',
+          color: THEME.titleText,
         },
         {
           type: 'text',
           text: report.strategicAdvice,
           size: 'xs',
-          color: '#1E1B4B',
+          color: THEME.bodyText,
           wrap: true,
           margin: 'sm',
         },
@@ -2866,7 +2668,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: THEME.headerBg,
       paddingAll: '16px',
       contents: [
         {
@@ -2876,7 +2678,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
             {
               type: 'box',
               layout: 'horizontal',
-              backgroundColor: '#047857',
+              backgroundColor: THEME.badgeBg,
               cornerRadius: 'xxl',
               paddingStart: '8px',
               paddingEnd: '8px',
@@ -2888,7 +2690,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
                   text: '📊 EXECUTIVE ALL-IN-ONE',
                   size: 'xxs',
                   weight: 'bold',
-                  color: '#A7F3D0',
+                  color: THEME.badgeText,
                 },
               ],
             },
@@ -2896,7 +2698,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
               type: 'text',
               text: new Date().toLocaleDateString('zh-TW'),
               size: 'xxs',
-              color: '#94A3B8',
+              color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -2907,7 +2709,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           text: '全方位對話、記事與工程智能統整',
           weight: 'bold',
           size: 'md',
-          color: '#FFFFFF',
+          color: THEME.headerTitle,
           margin: 'md',
         },
       ],
@@ -2915,7 +2717,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: THEME.bodyBg,
       paddingAll: '16px',
       contents:
         bodyContents.length > 0
@@ -2925,7 +2727,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
                 type: 'text',
                 text: rawText || '目前無可統整之內容',
                 size: 'sm',
-                color: '#1E293B',
+                color: THEME.bodyText,
                 wrap: true,
               },
             ],
@@ -2934,7 +2736,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       type: 'box',
       layout: 'horizontal',
       spacing: 'sm',
-      backgroundColor: '#F8FAFC',
+      backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
         {
@@ -2946,7 +2748,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           },
           style: 'primary',
           height: 'sm',
-          color: '#0284C7',
+          color: THEME.btnPrimaryBg,
           flex: 1,
         },
         {
@@ -2984,6 +2786,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
 }
 
 module.exports = {
+  THEME,
   getQuickReply,
   createVideoFlex,
   createWebFlex,
@@ -2998,5 +2801,3 @@ module.exports = {
   createNoteHelperFlex,
   createSynthesisFlex,
 };
-
-
