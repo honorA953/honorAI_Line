@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { summarizeYoutube, summarizeWebpage, describeImage } = require('../src/multimodal');
-const { createVideoFlex, createWebFlex, createImageFlex, createExecutiveSummaryFlex } = require('../src/flex');
+const { createVideoFlex, createWebFlex, createImageFlex, createAudioFlex, createExecutiveSummaryFlex } = require('../src/flex');
 const { summarizeMessages } = require('../src/summarize');
 
 async function testPremium() {
@@ -29,7 +29,12 @@ async function testPremium() {
   console.log('Image Flex 卡片產生成功! Type:', imgFlex.type, 'AltText:', imgFlex.altText);
   console.log('--------------------------------------------------');
 
-  console.log('=== 4. 測試 總結報告與延伸智庫補充 ===');
+  console.log('=== 4. 測試 語音 Whisper 轉譯卡片 ===');
+  const audioFlex = createAudioFlex({ transcript: '大家辛苦了，今天下午三點在第一會議室進行架構評審。' });
+  console.log('Audio Flex 卡片產生成功! Type:', audioFlex.type, 'AltText:', audioFlex.altText);
+  console.log('--------------------------------------------------');
+
+  console.log('=== 5. 測試 總結報告與延伸智庫補充 ===');
   const sampleMessages = [
     {
       displayName: 'Alice',

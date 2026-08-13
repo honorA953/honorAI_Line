@@ -1,5 +1,10 @@
 require('dotenv').config();
 
+const dns = require('node:dns');
+try {
+  dns.setDefaultResultOrder('ipv4first');
+} catch (_) {}
+
 const express = require('express');
 const { line, config, client, getConversationId, getDisplayName } = require('./line');
 const db = require('./db');
@@ -14,6 +19,7 @@ const {
   createVideoFlex,
   createWebFlex,
   createImageFlex,
+  createAudioFlex,
   createExecutiveSummaryFlex,
 } = require('./flex');
 
@@ -101,10 +107,11 @@ async function handleEvent(event, conversationId) {
       const buffer = await fetchLineContent(event.message.id);
       const transcript = await transcribeAudio(buffer);
       textContent = `[🎙️ 語音訊息: "${transcript}"]`;
-      replyMessages.push({
-        type: 'text',
-        text: `🎙️ 語音辨識：\n${transcript}`,
-      });
+      replyMessages.push(
+        createAudioFlex({
+          transcript,
+        })
+      );
     } catch (err) {
       console.error('[webhook] audio processing error:', err.message);
       textContent = '[🎙️ 傳送了語音訊息]';
