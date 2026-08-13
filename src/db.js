@@ -52,6 +52,43 @@ async function appendHistory(record) {
   await redis.rpush(HISTORY_KEY, JSON.stringify(record));
 }
 
+const SEEN_NEWS_KEY = 'linechat:seen_news';
+const inMemorySeen = new Set();
+
+async function getSeenNewsUrls() {
+  try {
+    const urls = (await redis.smembers(SEEN_NEWS_KEY).catch(() => [])) || [];
+    if (urls && Array.isArray(urls)) {
+      urls.forEach((u) => inMemorySeen.add(u));
+    }
+    return Array.from(inMemorySeen);
+  } catch (err) {
+    console.error('[db] getSeenNewsUrls error:', err.message);
+    return Array.from(inMemorySeen);
+  }
+}
+
+async function recordSeenNews(items) {
+  if (!items || !items.length) return;
+  const list = (Array.isArray(items) ? items : [items]).filter(Boolean);
+  if (!list.length) return;
+  list.forEach((item) => inMemorySeen.add(item));
+  try {
+    await redis.sadd(SEEN_NEWS_KEY, ...list);
+  } catch (err) {
+    console.error('[db] recordSeenNews error:', err.message);
+  }
+}
+
+async function clearSeenNews() {
+  inMemorySeen.clear();
+  try {
+    await redis.del(SEEN_NEWS_KEY);
+  } catch (err) {
+    console.error('[db] clearSeenNews error:', err.message);
+  }
+}
+
 module.exports = {
   registerConversation,
   appendMessage,
@@ -59,6 +96,11 @@ module.exports = {
   getAllConversationIds,
   clearMessages,
   appendHistory,
+  getSeenNewsUrls,
+  recordSeenNews,
+  clearSeenNews,
   HISTORY_KEY,
   CONVERSATIONS_SET_KEY,
+  SEEN_NEWS_KEY,
 };
+

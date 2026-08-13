@@ -1,8 +1,74 @@
 /**
  * LINE Flex Message 頂級 UI/UX 設計系統 (Executive Obsidian & High-Contrast Palette)
  * 專為跨平台 (iOS / Android / PC / Mac) 淺色與深色模式深度調校
- * 具備層次分明之 Header 膠囊標籤、微卡片模組化區塊、色系語意化視覺指引
+ * 具備層次分明之 Header 膠囊標籤、微卡片模組化區塊、色系語意化視覺指引與全互動按鈕
  */
+
+/**
+ * 產生常駐底部 LINE Quick Reply 快捷按鈕列
+ */
+function getQuickReply(currentTopic = 'all') {
+  const items = [
+    {
+      type: 'action',
+      action: {
+        type: 'message',
+        label: '🔄 換批即時新聞',
+        text: '換新聞',
+      },
+    },
+    {
+      type: 'action',
+      action: {
+        type: 'message',
+        label: '🌿 綠建ESG',
+        text: '綠建ESG',
+      },
+    },
+    {
+      type: 'action',
+      action: {
+        type: 'message',
+        label: '📜 房市都更',
+        text: '房市都更',
+      },
+    },
+    {
+      type: 'action',
+      action: {
+        type: 'message',
+        label: '🏛️ 建築設計',
+        text: '建築設計',
+      },
+    },
+    {
+      type: 'action',
+      action: {
+        type: 'message',
+        label: '🏗️ 重大工程',
+        text: '重大工程',
+      },
+    },
+    {
+      type: 'action',
+      action: {
+        type: 'message',
+        label: '📋 立即摘要',
+        text: '摘要',
+      },
+    },
+    {
+      type: 'action',
+      action: {
+        type: 'message',
+        label: '🎛️ 智能選單',
+        text: '選單',
+      },
+    },
+  ];
+
+  return { items };
+}
 
 /**
  * 建立 YouTube / 影片精華 Flex 卡片
@@ -193,6 +259,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
     type: 'flex',
     altText: `🎬 影片摘要：${title}`,
     contents: bubble,
+    quickReply: getQuickReply(),
   };
 }
 
@@ -347,6 +414,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
     type: 'flex',
     altText: `🔗 網頁速讀：${title}`,
     contents: bubble,
+    quickReply: getQuickReply(),
   };
 }
 
@@ -510,6 +578,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
     type: 'flex',
     altText: `🖼️ 圖片解析洞察`,
     contents: bubble,
+    quickReply: getQuickReply(),
   };
 }
 
@@ -609,6 +678,7 @@ function createAudioFlex({ transcript = '' }) {
     type: 'flex',
     altText: `🎙️ 語音辨識：${transcript.slice(0, 30)}`,
     contents: bubble,
+    quickReply: getQuickReply(),
   };
 }
 
@@ -718,7 +788,7 @@ function parseSummarySections(summaryText) {
 }
 
 /**
- * 建立對話全貌整合 Flex 卡片 (結構化高階模組卡)
+ * 建立對話全貌整合 Flex 卡片 (結構化高階模組卡 + 快捷按鈕)
  */
 function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', summaryText = '' }) {
   const sections = parseSummarySections(summaryText);
@@ -858,19 +928,57 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
       paddingAll: '16px',
       contents: bodyContents,
     },
+    footer: {
+      type: 'box',
+      layout: 'horizontal',
+      spacing: 'sm',
+      backgroundColor: '#F8FAFC',
+      paddingAll: '12px',
+      contents: [
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '📰 今日建築新聞',
+            text: '今日新聞',
+          },
+          style: 'primary',
+          height: 'sm',
+          color: '#0284C7',
+          flex: 1,
+        },
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '🎛️ 智能選單',
+            text: '選單',
+          },
+          style: 'secondary',
+          height: 'sm',
+          flex: 1,
+        },
+      ],
+    },
   };
 
   return {
     type: 'flex',
     altText: title,
     contents: bubble,
+    quickReply: getQuickReply(),
   };
 }
 
 /**
- * 建立每日建築與營造產業新聞 Flex 卡片 (Executive Amber/Slate 典雅工程美學)
+ * 建立每日建築與營造產業新聞 Flex 卡片 (全互動式按鈕 + 次次更新支援)
  */
-function createConstructionNewsFlex({ date = '', overview = '', items = [] }) {
+function createConstructionNewsFlex({
+  date = '',
+  categoryName = '即時前瞻全訊',
+  overview = '',
+  items = [],
+}) {
   const currentDate =
     date ||
     new Date().toLocaleDateString('zh-TW', {
@@ -898,6 +1006,9 @@ function createConstructionNewsFlex({ date = '', overview = '', items = [] }) {
     ) {
       catBg = '#FCE7F3';
       catColor = '#BE185D';
+    } else if (item.category?.includes('智') || item.category?.includes('科技')) {
+      catBg = '#E0F2FE';
+      catColor = '#0369A1';
     }
 
     const cardContents = [
@@ -980,20 +1091,41 @@ function createConstructionNewsFlex({ date = '', overview = '', items = [] }) {
       });
     }
 
+    // 互動按鈕列：閱讀原文 + AI 深度剖析
+    const buttonRowContents = [];
     if (item.url) {
-      cardContents.push({
+      buttonRowContents.push({
         type: 'button',
         action: {
           type: 'uri',
-          label: '🔗 閱讀完整報導',
+          label: '🔗 原文報導',
           uri: item.url,
         },
         style: 'link',
         height: 'sm',
         color: '#0284C7',
-        margin: 'xs',
+        flex: 1,
       });
     }
+    buttonRowContents.push({
+      type: 'button',
+      action: {
+        type: 'message',
+        label: '💡 AI 深度剖析',
+        text: `剖析新聞: ${item.title}`,
+      },
+      style: 'link',
+      height: 'sm',
+      color: '#B45309',
+      flex: 1,
+    });
+
+    cardContents.push({
+      type: 'box',
+      layout: 'horizontal',
+      margin: 'xs',
+      contents: buttonRowContents,
+    });
 
     return {
       type: 'box',
@@ -1089,7 +1221,7 @@ function createConstructionNewsFlex({ date = '', overview = '', items = [] }) {
             },
             {
               type: 'text',
-              text: `晨報 · ${currentDate}`,
+              text: `${currentDate}`,
               size: 'xxs',
               color: '#94A3B8',
               align: 'end',
@@ -1099,7 +1231,7 @@ function createConstructionNewsFlex({ date = '', overview = '', items = [] }) {
         },
         {
           type: 'text',
-          text: '今日建築與營造前瞻情報',
+          text: `今日建築與營造情報 · ${categoryName}`,
           weight: 'bold',
           size: 'md',
           color: '#FFFFFF',
@@ -1117,12 +1249,274 @@ function createConstructionNewsFlex({ date = '', overview = '', items = [] }) {
     footer: {
       type: 'box',
       layout: 'vertical',
+      spacing: 'sm',
+      backgroundColor: '#F8FAFC',
+      paddingAll: '12px',
+      contents: [
+        {
+          type: 'box',
+          layout: 'horizontal',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '🔄 換下一批 (不重複)',
+                text: '換新聞',
+              },
+              style: 'primary',
+              height: 'sm',
+              color: '#D97706',
+              flex: 2,
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '🎛️ 選單',
+                text: '選單',
+              },
+              style: 'secondary',
+              height: 'sm',
+              flex: 1,
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  return {
+    type: 'flex',
+    altText: `🏗️ 今日建築情報 · ${categoryName} (${currentDate})`,
+    contents: bubble,
+    quickReply: getQuickReply(),
+  };
+}
+
+/**
+ * 建立 🎛️ 智能控制台 / 快捷功能選單 Flex 卡片
+ */
+function createMenuFlex() {
+  const bubble = {
+    type: 'bubble',
+    size: 'giga',
+    header: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: '#0F172A',
+      paddingAll: '16px',
+      contents: [
+        {
+          type: 'box',
+          layout: 'horizontal',
+          contents: [
+            {
+              type: 'box',
+              layout: 'horizontal',
+              backgroundColor: '#1E293B',
+              cornerRadius: 'xxl',
+              paddingStart: '8px',
+              paddingEnd: '8px',
+              paddingTop: '3px',
+              paddingBottom: '3px',
+              contents: [
+                {
+                  type: 'text',
+                  text: '⚡ COMMAND HUB',
+                  size: 'xxs',
+                  weight: 'bold',
+                  color: '#38BDF8',
+                },
+              ],
+            },
+            {
+              type: 'text',
+              text: '全功能快捷控制台',
+              size: 'xxs',
+              color: '#94A3B8',
+              align: 'end',
+              gravity: 'center',
+            },
+          ],
+        },
+        {
+          type: 'text',
+          text: '🏛️ AI 建築智庫與智慧特助',
+          weight: 'bold',
+          size: 'md',
+          color: '#FFFFFF',
+          margin: 'md',
+        },
+        {
+          type: 'text',
+          text: '點擊下方按鈕即可立即取得最新資訊，無需手動輸入。',
+          size: 'xs',
+          color: '#94A3B8',
+          margin: 'xs',
+          wrap: true,
+        },
+      ],
+    },
+    body: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: '#FFFFFF',
+      paddingAll: '16px',
+      spacing: 'md',
+      contents: [
+        // 區塊 1: 即時新聞與專題
+        {
+          type: 'text',
+          text: '📰 建築與營造產業情報（次次更新）',
+          size: 'xs',
+          weight: 'bold',
+          color: '#64748B',
+        },
+        {
+          type: 'box',
+          layout: 'horizontal',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '📰 今日新聞',
+                text: '今日新聞',
+              },
+              style: 'primary',
+              height: 'sm',
+              color: '#0F172A',
+              flex: 1,
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '🔄 換批新聞',
+                text: '換新聞',
+              },
+              style: 'primary',
+              height: 'sm',
+              color: '#D97706',
+              flex: 1,
+            },
+          ],
+        },
+        {
+          type: 'box',
+          layout: 'horizontal',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '🌿 綠建 ESG',
+                text: '綠建ESG',
+              },
+              style: 'secondary',
+              height: 'sm',
+              flex: 1,
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '📜 房市都更',
+                text: '房市都更',
+              },
+              style: 'secondary',
+              height: 'sm',
+              flex: 1,
+            },
+          ],
+        },
+        {
+          type: 'box',
+          layout: 'horizontal',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '🏛️ 空間設計',
+                text: '建築設計',
+              },
+              style: 'secondary',
+              height: 'sm',
+              flex: 1,
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '🏗️ 重大工程',
+                text: '重大工程',
+              },
+              style: 'secondary',
+              height: 'sm',
+              flex: 1,
+            },
+          ],
+        },
+        {
+          type: 'separator',
+          margin: 'md',
+          color: '#E2E8F0',
+        },
+        // 區塊 2: 對話紀錄與管理
+        {
+          type: 'text',
+          text: '📋 對話管理與深度智庫',
+          size: 'xs',
+          weight: 'bold',
+          color: '#64748B',
+        },
+        {
+          type: 'box',
+          layout: 'horizontal',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '📋 立即總結對話',
+                text: '摘要',
+              },
+              style: 'primary',
+              height: 'sm',
+              color: '#0284C7',
+              flex: 1,
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: '🧹 清空歷史對話',
+                text: '清空記錄',
+              },
+              style: 'secondary',
+              height: 'sm',
+              flex: 1,
+            },
+          ],
+        },
+      ],
+    },
+    footer: {
+      type: 'box',
+      layout: 'vertical',
       backgroundColor: '#F8FAFC',
       paddingAll: '10px',
       contents: [
         {
           type: 'text',
-          text: '🤖 AI 智庫即時彙整 · 自動追蹤晨間產經情報',
+          text: '💡 亦可直接輸入文字諮詢建築/工程/法規問題或貼上連結',
           size: 'xxs',
           color: '#94A3B8',
           align: 'center',
@@ -1133,16 +1527,249 @@ function createConstructionNewsFlex({ date = '', overview = '', items = [] }) {
 
   return {
     type: 'flex',
-    altText: `🏗️ 今日建築與營造產業情報 (${currentDate})`,
+    altText: '🎛️ AI 建築智庫與智慧特助 · 快捷控制台',
     contents: bubble,
+    quickReply: getQuickReply(),
+  };
+}
+
+/**
+ * 建立新聞深度智庫剖析 Flex 卡片
+ */
+function createNewsAnalysisFlex({ title = '', analysisText = '' }) {
+  const bubble = {
+    type: 'bubble',
+    size: 'giga',
+    header: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: '#0F172A',
+      paddingAll: '16px',
+      contents: [
+        {
+          type: 'box',
+          layout: 'horizontal',
+          contents: [
+            {
+              type: 'box',
+              layout: 'horizontal',
+              backgroundColor: '#451A03',
+              cornerRadius: 'xxl',
+              paddingStart: '8px',
+              paddingEnd: '8px',
+              paddingTop: '3px',
+              paddingBottom: '3px',
+              contents: [
+                {
+                  type: 'text',
+                  text: '💡 IN-DEPTH ANALYSIS',
+                  size: 'xxs',
+                  weight: 'bold',
+                  color: '#FDE68A',
+                },
+              ],
+            },
+            {
+              type: 'text',
+              text: '智庫首席剖析',
+              size: 'xxs',
+              color: '#94A3B8',
+              align: 'end',
+              gravity: 'center',
+            },
+          ],
+        },
+        {
+          type: 'text',
+          text: title || '新聞深度剖析',
+          weight: 'bold',
+          size: 'md',
+          color: '#FFFFFF',
+          wrap: true,
+          margin: 'md',
+        },
+      ],
+    },
+    body: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: '#FFFFFF',
+      paddingAll: '16px',
+      contents: [
+        {
+          type: 'text',
+          text: analysisText,
+          size: 'sm',
+          color: '#1E293B',
+          wrap: true,
+        },
+      ],
+    },
+    footer: {
+      type: 'box',
+      layout: 'horizontal',
+      spacing: 'sm',
+      backgroundColor: '#F8FAFC',
+      paddingAll: '12px',
+      contents: [
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '🔄 換批新聞',
+            text: '換新聞',
+          },
+          style: 'primary',
+          height: 'sm',
+          color: '#D97706',
+          flex: 1,
+        },
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '🎛️ 智能選單',
+            text: '選單',
+          },
+          style: 'secondary',
+          height: 'sm',
+          flex: 1,
+        },
+      ],
+    },
+  };
+
+  return {
+    type: 'flex',
+    altText: `💡 新聞深度剖析：${title}`,
+    contents: bubble,
+    quickReply: getQuickReply(),
+  };
+}
+
+/**
+ * 建立 AI 顧問問答 Flex 卡片
+ */
+function createAssistantFlex({ question = '', answer = '' }) {
+  const bubble = {
+    type: 'bubble',
+    size: 'giga',
+    header: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: '#0F172A',
+      paddingAll: '16px',
+      contents: [
+        {
+          type: 'box',
+          layout: 'horizontal',
+          contents: [
+            {
+              type: 'box',
+              layout: 'horizontal',
+              backgroundColor: '#1E1B4B',
+              cornerRadius: 'xxl',
+              paddingStart: '8px',
+              paddingEnd: '8px',
+              paddingTop: '3px',
+              paddingBottom: '3px',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🤖 AI ARCH-CONSULTANT',
+                  size: 'xxs',
+                  weight: 'bold',
+                  color: '#A5B4FC',
+                },
+              ],
+            },
+            {
+              type: 'text',
+              text: '智庫特助解答',
+              size: 'xxs',
+              color: '#94A3B8',
+              align: 'end',
+              gravity: 'center',
+            },
+          ],
+        },
+        {
+          type: 'text',
+          text: question.length > 30 ? question.slice(0, 30) + '...' : question,
+          weight: 'bold',
+          size: 'md',
+          color: '#FFFFFF',
+          wrap: true,
+          margin: 'md',
+        },
+      ],
+    },
+    body: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: '#FFFFFF',
+      paddingAll: '16px',
+      contents: [
+        {
+          type: 'text',
+          text: answer,
+          size: 'sm',
+          color: '#1E293B',
+          wrap: true,
+        },
+      ],
+    },
+    footer: {
+      type: 'box',
+      layout: 'horizontal',
+      spacing: 'sm',
+      backgroundColor: '#F8FAFC',
+      paddingAll: '12px',
+      contents: [
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '📰 今日新聞',
+            text: '今日新聞',
+          },
+          style: 'primary',
+          height: 'sm',
+          color: '#0284C7',
+          flex: 1,
+        },
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '🎛️ 智能選單',
+            text: '選單',
+          },
+          style: 'secondary',
+          height: 'sm',
+          flex: 1,
+        },
+      ],
+    },
+  };
+
+  return {
+    type: 'flex',
+    altText: `🤖 AI 特助解答：${question.slice(0, 20)}`,
+    contents: bubble,
+    quickReply: getQuickReply(),
   };
 }
 
 module.exports = {
+  getQuickReply,
   createVideoFlex,
   createWebFlex,
   createImageFlex,
   createAudioFlex,
   createExecutiveSummaryFlex,
   createConstructionNewsFlex,
+  createMenuFlex,
+  createNewsAnalysisFlex,
+  createAssistantFlex,
 };
