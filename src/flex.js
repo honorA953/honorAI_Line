@@ -1,6 +1,7 @@
 /**
  * LINE Flex Message 產生器
- * 打造高質感、現代深色系 (Dark Mode Glassmorphism) 智能卡片排版
+ * 採用高對比度 (High-Contrast Universal Palette) 設計
+ * 確保在 iOS / Android / PC / Mac 的淺色與深色模式下所有文字皆清晰可見，絕不黑底黑字
  */
 
 /**
@@ -16,16 +17,16 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
       {
         type: 'text',
         text: `${idx + 1}.`,
-        size: 'xs',
-        color: '#38BDF8',
+        size: 'sm',
+        color: '#2563EB',
         flex: 1,
         weight: 'bold',
       },
       {
         type: 'text',
         text: p,
-        size: 'xs',
-        color: '#CBD5E1',
+        size: 'sm',
+        color: '#1E293B',
         flex: 11,
         wrap: true,
       },
@@ -36,9 +37,9 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
     {
       type: 'text',
       text: '📌 核心精華',
-      size: 'xs',
+      size: 'sm',
       weight: 'bold',
-      color: '#38BDF8',
+      color: '#2563EB',
     },
     ...pointContents,
   ];
@@ -48,28 +49,30 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
       {
         type: 'separator',
         margin: 'lg',
-        color: '#334155',
+        color: '#CBD5E1',
       },
       {
         type: 'box',
         layout: 'vertical',
         margin: 'md',
-        paddingAll: '10px',
-        backgroundColor: '#1E293B',
+        paddingAll: '12px',
+        backgroundColor: '#FFFBEB',
         cornerRadius: '8px',
+        borderWidth: '1px',
+        borderColor: '#FDE68A',
         contents: [
           {
             type: 'text',
             text: '💡 AI 智庫補充與延伸脈絡',
             size: 'xs',
             weight: 'bold',
-            color: '#F59E0B',
+            color: '#B45309',
           },
           {
             type: 'text',
             text: supplement,
             size: 'xs',
-            color: '#E2E8F0',
+            color: '#78350F',
             wrap: true,
             margin: 'sm',
           },
@@ -84,7 +87,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#1E293B',
       paddingAll: '16px',
       contents: [
         {
@@ -96,13 +99,13 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
               text: '🎬 影片深度解析',
               size: 'xxs',
               weight: 'bold',
-              color: '#EF4444',
+              color: '#F87171',
             },
             {
               type: 'text',
               text: 'YOUTUBE INSIGHT',
               size: 'xxs',
-              color: '#64748B',
+              color: '#94A3B8',
               align: 'end',
             },
           ],
@@ -112,7 +115,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
           text: title || 'YouTube 影片',
           weight: 'bold',
           size: 'md',
-          color: '#F8FAFC',
+          color: '#FFFFFF',
           wrap: true,
           margin: 'sm',
         },
@@ -121,9 +124,8 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#FFFFFF',
       paddingAll: '16px',
-      paddingTop: '0px',
       contents,
     },
   };
@@ -132,9 +134,8 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
     bubble.footer = {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#F8FAFC',
       paddingAll: '12px',
-      paddingTop: '0px',
       contents: [
         {
           type: 'button',
@@ -143,9 +144,9 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
             label: '▶️ 開啟原影片',
             uri: url,
           },
-          style: 'secondary',
+          style: 'primary',
           height: 'sm',
-          color: '#1E293B',
+          color: '#2563EB',
         },
       ],
     };
@@ -166,15 +167,15 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
     {
       type: 'text',
       text: '📌 內容速讀',
-      size: 'xs',
+      size: 'sm',
       weight: 'bold',
-      color: '#38BDF8',
+      color: '#059669',
     },
     {
       type: 'text',
       text: summary,
-      size: 'xs',
-      color: '#CBD5E1',
+      size: 'sm',
+      color: '#1E293B',
       wrap: true,
       margin: 'sm',
     },
@@ -185,28 +186,30 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
       {
         type: 'separator',
         margin: 'lg',
-        color: '#334155',
+        color: '#CBD5E1',
       },
       {
         type: 'box',
         layout: 'vertical',
         margin: 'md',
-        paddingAll: '10px',
-        backgroundColor: '#1E293B',
+        paddingAll: '12px',
+        backgroundColor: '#ECFDF5',
         cornerRadius: '8px',
+        borderWidth: '1px',
+        borderColor: '#A7F3D0',
         contents: [
           {
             type: 'text',
             text: '💡 相關背景與延伸知識',
             size: 'xs',
             weight: 'bold',
-            color: '#10B981',
+            color: '#047857',
           },
           {
             type: 'text',
             text: supplement,
             size: 'xs',
-            color: '#E2E8F0',
+            color: '#064E3B',
             wrap: true,
             margin: 'sm',
           },
@@ -221,7 +224,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#1E293B',
       paddingAll: '16px',
       contents: [
         {
@@ -233,13 +236,13 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
               text: '🔗 網頁智能導讀',
               size: 'xxs',
               weight: 'bold',
-              color: '#10B981',
+              color: '#34D399',
             },
             {
               type: 'text',
               text: 'WEB INSIGHT',
               size: 'xxs',
-              color: '#64748B',
+              color: '#94A3B8',
               align: 'end',
             },
           ],
@@ -249,7 +252,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
           text: title || '網頁連結',
           weight: 'bold',
           size: 'md',
-          color: '#F8FAFC',
+          color: '#FFFFFF',
           wrap: true,
           margin: 'sm',
         },
@@ -258,9 +261,8 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#FFFFFF',
       paddingAll: '16px',
-      paddingTop: '0px',
       contents: bodyContents,
     },
   };
@@ -269,9 +271,8 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
     bubble.footer = {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#F8FAFC',
       paddingAll: '12px',
-      paddingTop: '0px',
       contents: [
         {
           type: 'button',
@@ -280,9 +281,9 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
             label: '🌐 閱讀全文',
             uri: url,
           },
-          style: 'secondary',
+          style: 'primary',
           height: 'sm',
-          color: '#1E293B',
+          color: '#059669',
         },
       ],
     };
@@ -303,15 +304,15 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
     {
       type: 'text',
       text: '🖼️ 畫面主體解析',
-      size: 'xs',
+      size: 'sm',
       weight: 'bold',
-      color: '#A855F7',
+      color: '#7C3AED',
     },
     {
       type: 'text',
       text: description,
-      size: 'xs',
-      color: '#CBD5E1',
+      size: 'sm',
+      color: '#1E293B',
       wrap: true,
       margin: 'sm',
     },
@@ -323,22 +324,24 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
         type: 'box',
         layout: 'vertical',
         margin: 'md',
-        paddingAll: '8px',
-        backgroundColor: '#1E293B',
+        paddingAll: '10px',
+        backgroundColor: '#F1F5F9',
         cornerRadius: '6px',
+        borderWidth: '1px',
+        borderColor: '#CBD5E1',
         contents: [
           {
             type: 'text',
             text: '🔍 提取文字 / 數據資訊',
             size: 'xxs',
             weight: 'bold',
-            color: '#38BDF8',
+            color: '#475569',
           },
           {
             type: 'text',
             text: ocr,
             size: 'xs',
-            color: '#E2E8F0',
+            color: '#0F172A',
             wrap: true,
             margin: 'xs',
           },
@@ -352,28 +355,30 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
       {
         type: 'separator',
         margin: 'lg',
-        color: '#334155',
+        color: '#CBD5E1',
       },
       {
         type: 'box',
         layout: 'vertical',
         margin: 'md',
-        paddingAll: '10px',
-        backgroundColor: '#1E293B',
+        paddingAll: '12px',
+        backgroundColor: '#FAF5FF',
         cornerRadius: '8px',
+        borderWidth: '1px',
+        borderColor: '#E9D5FF',
         contents: [
           {
             type: 'text',
             text: '💡 專業洞察與補充建議',
             size: 'xs',
             weight: 'bold',
-            color: '#F59E0B',
+            color: '#7E22CE',
           },
           {
             type: 'text',
             text: supplement,
             size: 'xs',
-            color: '#E2E8F0',
+            color: '#581C87',
             wrap: true,
             margin: 'sm',
           },
@@ -388,7 +393,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#1E293B',
       paddingAll: '16px',
       contents: [
         {
@@ -400,13 +405,13 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
               text: '👁️ 影像智慧辨識',
               size: 'xxs',
               weight: 'bold',
-              color: '#A855F7',
+              color: '#C084FC',
             },
             {
               type: 'text',
               text: 'VISION & OCR',
               size: 'xxs',
-              color: '#64748B',
+              color: '#94A3B8',
               align: 'end',
             },
           ],
@@ -416,7 +421,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
           text: '圖片內容與數據洞察',
           weight: 'bold',
           size: 'md',
-          color: '#F8FAFC',
+          color: '#FFFFFF',
           margin: 'sm',
         },
       ],
@@ -424,9 +429,8 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#FFFFFF',
       paddingAll: '16px',
-      paddingTop: '0px',
       contents: bodyContents,
     },
   };
@@ -448,7 +452,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
     header: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#1E293B',
       paddingAll: '16px',
       contents: [
         {
@@ -466,7 +470,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
               type: 'text',
               text: new Date().toLocaleDateString('zh-TW'),
               size: 'xxs',
-              color: '#64748B',
+              color: '#94A3B8',
               align: 'end',
             },
           ],
@@ -476,7 +480,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
           text: title,
           weight: 'bold',
           size: 'md',
-          color: '#F8FAFC',
+          color: '#FFFFFF',
           margin: 'sm',
         },
       ],
@@ -484,15 +488,14 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
     body: {
       type: 'box',
       layout: 'vertical',
-      backgroundColor: '#0F172A',
+      backgroundColor: '#FFFFFF',
       paddingAll: '16px',
-      paddingTop: '0px',
       contents: [
         {
           type: 'text',
           text: summaryText,
-          size: 'xs',
-          color: '#CBD5E1',
+          size: 'sm',
+          color: '#1E293B',
           wrap: true,
         },
       ],
