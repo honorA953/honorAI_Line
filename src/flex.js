@@ -1378,8 +1378,8 @@ function createMenuFlex() {
               type: 'button',
               action: {
                 type: 'message',
-                label: '🧹 清空歷史對話',
-                text: '清空記錄',
+                label: '📋 對話即時摘要',
+                text: '摘要',
               },
               style: 'secondary',
               height: 'sm',

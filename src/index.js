@@ -65,7 +65,6 @@ const REFRESH_NEWS_KEYWORDS = [
   '換這批',
 ];
 const MENU_KEYWORDS = ['選單', '功能', '按鈕', 'menu', 'help', '說明', '開始', '控制台'];
-const CLEAR_KEYWORDS = ['清空記錄', '清空對話', '清除記錄', '清空'];
 const NOTES_LIST_KEYWORDS = [
   '看記事',
   '記事本',
@@ -142,22 +141,7 @@ async function handleEvent(event, conversationId) {
       return replyImmediateMenu(event.replyToken);
     }
 
-    // 2. 清空對話記錄指令
-    if (CLEAR_KEYWORDS.includes(rawText)) {
-      await db.clearMessages(conversationId);
-      return client.replyMessage({
-        replyToken: event.replyToken,
-        messages: [
-          {
-            type: 'text',
-            text: '🧹 已為您清空目前對話累積紀錄。隨時可點擊下方按鈕或傳送新訊息！',
-            quickReply: getQuickReply(),
-          },
-        ],
-      });
-    }
-
-    // 3. 記事本管理指令（清空記事）
+    // 2. 記事本管理指令（清空記事）
     if (NOTES_CLEAR_KEYWORDS.includes(rawText)) {
       await db.clearNotes(conversationId);
       return client.replyMessage({
@@ -274,29 +258,32 @@ async function handleEvent(event, conversationId) {
     } else {
       // 若非網址，判斷是否為 1對1 對話或群組主動提問
       const isOneOnOne = event.source.type === 'user';
-      const isExplicitAiTrigger =
-        rawText.startsWith('@AI') ||
-        rawText.startsWith('@ai') ||
-        rawText.startsWith('@問題') ||
-        rawText.startsWith('@助手') ||
-        rawText.startsWith('@助理') ||
-        rawText.startsWith('請教AI') ||
-        rawText.startsWith('請教') ||
-        rawText.startsWith('AI:') ||
-        rawText.startsWith('AI：') ||
-        rawText.startsWith('ai:') ||
-        rawText.startsWith('ai：');
+      
+      // 支援 LINE 原生 @ 標註 (mentionees)、半形@/全形＠、AI/ai、請問、請教、小幫手、助手等
+      const hasMention = Boolean(
+        event.message.mention &&
+        event.message.mention.mentionees &&
+        event.message.mention.mentionees.length > 0
+      );
 
-      if (isOneOnOne || isExplicitAiTrigger) {
+      const isAiTrigger =
+        hasMention ||
+        /^[@＠]?(ai|助手|助理|問題|bot|大大|小幫手)/i.test(rawText) ||
+        /^(請教ai|請教|請問ai|請問|請幫我|請分析|幫我)/i.test(rawText) ||
+        rawText.startsWith('@') ||
+        rawText.startsWith('＠');
+
+      if (isOneOnOne || isAiTrigger) {
         const cleanQuestion = rawText
-          .replace(/^(@?AI|@問題|@助手|@助理|請教AI|請教)[:：\s]*/i, '')
+          .replace(/^([@＠]?(ai|助手|助理|問題|bot|大大|小幫手)|請教ai|請教|請問ai|請問|請幫我|請分析|幫我)[:：\s]*/i, '')
           .trim();
         const displayName = await getDisplayName(event.source);
         const recentMessages = await db.getMessages(conversationId);
         const notes = await db.getNotes(conversationId);
 
+        const promptQuestion = cleanQuestion || rawText || '您好！請問有什麼我可以協助您的？';
         const assistantResult = await askAssistant({
-          question: cleanQuestion || rawText,
+          question: promptQuestion,
           displayName,
           recentMessages,
           notes,
@@ -304,7 +291,7 @@ async function handleEvent(event, conversationId) {
 
         replyMessages.push(
           createAssistantFlex({
-            question: cleanQuestion || rawText,
+            question: promptQuestion,
             data: assistantResult,
           })
         );
@@ -368,12 +355,18 @@ async function handleEvent(event, conversationId) {
     } catch (err) {
       console.error('[webhook] reply error, falling back to text:', err.message);
       try {
+        let fallbackText = '🤖 已為您處理完成！';
+        if (replyMessages[0]?.type === 'flex') {
+          fallbackText = replyMessages[0]?.altText || fallbackText;
+        } else if (replyMessages[0]?.type === 'text') {
+          fallbackText = replyMessages[0].text;
+        }
         await client.replyMessage({
           replyToken: event.replyToken,
           messages: [
             {
               type: 'text',
-              text: textContent,
+              text: fallbackText,
               quickReply: getQuickReply(),
             },
           ],
