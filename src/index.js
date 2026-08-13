@@ -274,20 +274,22 @@ async function handleEvent(event, conversationId) {
     } else {
       // 若非網址，判斷是否為 1對1 對話或群組主動提問
       const isOneOnOne = event.source.type === 'user';
-      const isQuestionOrAiTrigger =
-        rawText.startsWith('AI') ||
-        rawText.startsWith('ai') ||
+      const isExplicitAiTrigger =
         rawText.startsWith('@AI') ||
         rawText.startsWith('@ai') ||
-        rawText.startsWith('請教') ||
+        rawText.startsWith('@問題') ||
+        rawText.startsWith('@助手') ||
+        rawText.startsWith('@助理') ||
         rawText.startsWith('請教AI') ||
-        rawText.startsWith('問') ||
-        rawText.endsWith('?') ||
-        rawText.endsWith('？');
+        rawText.startsWith('請教') ||
+        rawText.startsWith('AI:') ||
+        rawText.startsWith('AI：') ||
+        rawText.startsWith('ai:') ||
+        rawText.startsWith('ai：');
 
-      if (isOneOnOne || isQuestionOrAiTrigger) {
+      if (isOneOnOne || isExplicitAiTrigger) {
         const cleanQuestion = rawText
-          .replace(/^(@?AI|請教AI|請教|問)[:：\s]*/i, '')
+          .replace(/^(@?AI|@問題|@助手|@助理|請教AI|請教)[:：\s]*/i, '')
           .trim();
         const displayName = await getDisplayName(event.source);
         const recentMessages = await db.getMessages(conversationId);

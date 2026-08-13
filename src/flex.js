@@ -719,27 +719,27 @@ function parseSummarySections(summaryText) {
   const sectionDefs = [
     {
       key: 'topics',
-      pattern: /📊|討論主軸|核心議題/,
-      title: '討論主軸與核心議題',
-      badge: 'TOPICS',
+      pattern: /📊|對話紀錄|發言摘要|討論主軸|核心議題/,
+      title: '對話紀錄與各人發言摘要',
+      badge: 'SPEECHES',
     },
     {
       key: 'decisions',
-      pattern: /💡|重要結論|關鍵決策/,
-      title: '重要結論與關鍵決策',
-      badge: 'DECISIONS',
-    },
-    {
-      key: 'insights',
-      pattern: /📚|智庫補充|延伸洞察/,
-      title: 'AI 智庫補充與延伸洞察',
-      badge: 'INSIGHTS',
+      pattern: /💡|討論焦點|共同事項|重要結論|關鍵決策/,
+      title: '討論焦點與共同事項',
+      badge: 'TOPICS',
     },
     {
       key: 'todos',
-      pattern: /🎯|待辦事項|行動清單/,
-      title: '待辦事項與行動清單',
+      pattern: /🎯|交辦|待辦|約定事項|行動清單/,
+      title: '交辦／待辦／約定事項',
       badge: 'ACTION ITEMS',
+    },
+    {
+      key: 'insights',
+      pattern: /📚|備忘|延伸提醒|智庫補充|延伸洞察/,
+      title: '備忘與延伸提醒',
+      badge: 'NOTES',
     },
   ];
 
