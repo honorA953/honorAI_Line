@@ -59,24 +59,24 @@ async function test() {
   console.log('News Flex footer buttons count:', newsFlex.contents.footer.contents.length);
 
   console.log('\n=== 5. 測試 AI 顧問問答與新聞深度剖析 ===');
-  const sampleQuestion = '綠建築標章的銀級與黃金級評定標準有何核心差異？';
+  const sampleQuestion = '危老重建與都市更新在容積獎勵上限與同意門檻上有何核心差異？';
   console.log(`提問: ${sampleQuestion}`);
-  const answer = await askAssistant({ question: sampleQuestion });
-  console.log(`AI 回答節錄 (前 150 字):\n${answer.slice(0, 150)}...\n`);
+  const assistantData = await askAssistant({ question: sampleQuestion });
+  console.log('AI 結構化顧問解答:', JSON.stringify(assistantData, null, 2));
 
-  const assistantFlex = createAssistantFlex({ question: sampleQuestion, answer });
+  const assistantFlex = createAssistantFlex({ question: sampleQuestion, data: assistantData });
   console.log('Assistant Flex generated successfully:', assistantFlex.altText);
 
   if (batch1.items.length > 0) {
     const targetNews = batch1.items[0].title;
     console.log(`\n測試深度剖析新聞: ${targetNews}`);
-    const analysis = await analyzeNewsDeeply(targetNews);
-    console.log(`剖析節錄:\n${analysis.slice(0, 150)}...\n`);
-    const analysisFlex = createNewsAnalysisFlex({ title: targetNews, analysisText: analysis });
+    const analysisData = await analyzeNewsDeeply(targetNews);
+    console.log('新聞結構化剖析結果:', JSON.stringify(analysisData, null, 2));
+    const analysisFlex = createNewsAnalysisFlex({ title: targetNews, data: analysisData });
     console.log('Analysis Flex generated successfully:', analysisFlex.altText);
   }
 
-  console.log('\n🎉 所有功能驗證完成，運作完全正常！');
+  console.log('\n🎉 所有功能升級驗證完成，運作完全正常！');
 }
 
 test().catch((err) => {

@@ -31,9 +31,17 @@ const {
   createMenuFlex,
   createNewsAnalysisFlex,
   createAssistantFlex,
+  createNotesFlex,
+  createNoteHelperFlex,
+  createSynthesisFlex,
 } = require('./flex');
 const { getDailyConstructionDigest } = require('./news');
-const { askAssistant, analyzeNewsDeeply } = require('./assistant');
+const {
+  askAssistant,
+  analyzeNewsDeeply,
+  parseNoteFromText,
+  synthesizeAll,
+} = require('./assistant');
 
 const SUMMARY_KEYWORD = process.env.SUMMARY_KEYWORD || '摘要';
 const NEWS_KEYWORDS = [
@@ -58,6 +66,42 @@ const REFRESH_NEWS_KEYWORDS = [
 ];
 const MENU_KEYWORDS = ['選單', '功能', '按鈕', 'menu', 'help', '說明', '開始', '控制台'];
 const CLEAR_KEYWORDS = ['清空記錄', '清空對話', '清除記錄', '清空'];
+const NOTES_LIST_KEYWORDS = [
+  '看記事',
+  '記事本',
+  '待辦清單',
+  '備忘錄',
+  '我的記事',
+  '代辦清單',
+  '記事清單',
+  '待辦',
+  'notes',
+  'todo',
+  '待辦記事',
+];
+const NOTES_HELPER_KEYWORDS = [
+  '新增記事',
+  '記一筆',
+  '快捷記事',
+  '記事範本',
+  '記事引導',
+  '記事教學',
+  '怎麼記事',
+  '寫記事',
+  '新增待辦',
+  '新增備忘',
+];
+const NOTES_CLEAR_KEYWORDS = ['清空記事', '清除記事', '刪除記事', '清空待辦'];
+const SYNTHESIS_KEYWORDS = [
+  '智能統整',
+  '統整',
+  '整合',
+  '工作統整',
+  '彙整',
+  '今日進度',
+  '跨維度統整',
+  '全方位統整',
+];
 
 const app = express();
 
@@ -113,17 +157,62 @@ async function handleEvent(event, conversationId) {
       });
     }
 
-    // 3. 對話即時摘要
+    // 3. 記事本管理指令（清空記事）
+    if (NOTES_CLEAR_KEYWORDS.includes(rawText)) {
+      await db.clearNotes(conversationId);
+      return client.replyMessage({
+        replyToken: event.replyToken,
+        messages: [
+          {
+            type: 'text',
+            text: '🧹 已為您清空所有待辦記事本清單！隨時傳送「記下：...」即可新增。',
+            quickReply: getQuickReply(),
+          },
+        ],
+      });
+    }
+
+    // 4. 查看記事本 / 待辦清單
+    if (NOTES_LIST_KEYWORDS.includes(lowerText)) {
+      return replyImmediateNotes(event.replyToken, conversationId);
+    }
+
+    // 5. 記事範本與快捷引導 (解決記不住指令問題)
+    if (NOTES_HELPER_KEYWORDS.includes(rawText) || NOTES_HELPER_KEYWORDS.includes(lowerText)) {
+      return replyImmediateNoteHelper(event.replyToken);
+    }
+
+    // 6. 跨維度智能全方位統整 (對話 + 記事 + 數據 + 風險)
+    if (SYNTHESIS_KEYWORDS.includes(rawText)) {
+      return replyImmediateSynthesis(event.replyToken, conversationId, event.source);
+    }
+
+    // 6. 新增記事 / 備忘 (識別「記下」、「幫我記」、「記事」、「備忘」、「提醒我」、「待辦」)
+    const isNoteCreation =
+      rawText.startsWith('記下') ||
+      rawText.startsWith('幫我記') ||
+      rawText.startsWith('記事') ||
+      rawText.startsWith('備忘') ||
+      rawText.startsWith('提醒我') ||
+      rawText.startsWith('待辦') ||
+      lowerText.startsWith('todo') ||
+      lowerText.startsWith('note');
+
+    if (isNoteCreation) {
+      return replyImmediateNoteCreation(event.replyToken, conversationId, rawText);
+    }
+
+    // 7. 對話即時摘要 (純對話)
     if (rawText === SUMMARY_KEYWORD || rawText === '摘要' || rawText === '對話摘要') {
       return replyImmediateSummary(event.replyToken, conversationId);
     }
 
-    // 4. 新聞「換一批」次次更新
+    // 8. 新聞「換一批」次次更新
     if (REFRESH_NEWS_KEYWORDS.includes(rawText)) {
       return replyImmediateNews(event.replyToken, { topic: 'all', refresh: true });
     }
 
-    // 5. 分類新聞專題
+    // 9. 分類新聞專題
     if (rawText === '綠建ESG' || rawText === '綠建築' || lowerText === 'esg') {
       return replyImmediateNews(event.replyToken, { topic: 'esg' });
     }
@@ -140,12 +229,12 @@ async function handleEvent(event, conversationId) {
       return replyImmediateNews(event.replyToken, { topic: 'smart' });
     }
 
-    // 6. 一般今日建築新聞
+    // 10. 一般今日建築新聞
     if (NEWS_KEYWORDS.includes(rawText)) {
       return replyImmediateNews(event.replyToken, { topic: 'all' });
     }
 
-    // 7. 新聞深度剖析指令 (點擊卡片按鈕觸發)
+    // 11. 新聞深度剖析指令 (點擊卡片按鈕觸發)
     if (
       rawText.startsWith('剖析新聞:') ||
       rawText.startsWith('剖析新聞：') ||
@@ -156,7 +245,7 @@ async function handleEvent(event, conversationId) {
       return replyImmediateNewsAnalysis(event.replyToken, newsTitle);
     }
 
-    // 8. 檢查是否有網址（YouTube/網頁）並豐富化內容
+    // 12. 檢查是否有網址（YouTube/網頁）並豐富化內容
     const { enrichedText, items } = await enrichMessageText(event.message.text);
     textContent = enrichedText;
 
@@ -201,15 +290,20 @@ async function handleEvent(event, conversationId) {
           .replace(/^(@?AI|請教AI|請教|問)[:：\s]*/i, '')
           .trim();
         const displayName = await getDisplayName(event.source);
-        const answer = await askAssistant({
+        const recentMessages = await db.getMessages(conversationId);
+        const notes = await db.getNotes(conversationId);
+
+        const assistantResult = await askAssistant({
           question: cleanQuestion || rawText,
           displayName,
+          recentMessages,
+          notes,
         });
 
         replyMessages.push(
           createAssistantFlex({
             question: cleanQuestion || rawText,
-            answer,
+            data: assistantResult,
           })
         );
       }
@@ -301,7 +395,111 @@ async function replyImmediateMenu(replyToken) {
       messages: [
         {
           type: 'text',
-          text: '🎛️ 請選擇操作：\n1. 今日新聞\n2. 換新聞\n3. 綠建ESG\n4. 房市都更\n5. 建築設計\n6. 摘要\n7. 清空記錄',
+          text: '🎛️ 請選擇操作：\n1. 記事本\n2. 智能統整\n3. 今日新聞\n4. 換新聞\n5. 綠建ESG\n6. 房市都更\n7. 摘要',
+          quickReply: getQuickReply(),
+        },
+      ],
+    });
+  }
+}
+
+async function replyImmediateNotes(replyToken, conversationId) {
+  try {
+    const notes = await db.getNotes(conversationId);
+    const flexCard = createNotesFlex(notes);
+    await client.replyMessage({
+      replyToken,
+      messages: [flexCard],
+    });
+  } catch (err) {
+    console.error('[notes] reply error:', err.message);
+    await client.replyMessage({
+      replyToken,
+      messages: [
+        {
+          type: 'text',
+          text: '📝 讀取記事本發生錯誤，請稍候再試。',
+          quickReply: getQuickReply(),
+        },
+      ],
+    });
+  }
+}
+
+async function replyImmediateNoteHelper(replyToken) {
+  try {
+    const flexCard = createNoteHelperFlex();
+    await client.replyMessage({
+      replyToken,
+      messages: [flexCard],
+    });
+  } catch (err) {
+    console.error('[notes-helper] reply error:', err.message);
+    await client.replyMessage({
+      replyToken,
+      messages: [
+        {
+          type: 'text',
+          text: '📝 快捷記事範本：\n1. 記下：明天上午9點結構技師工地會勘\n2. 記下：下週三向建管處送審執照變更案\n3. 備忘：鋼筋每噸最新報價 21,500 元\n4. 記下：連續壁厚度由70cm調整至80cm\n5. 備忘：爭取危老容積獎勵滿額40%',
+          quickReply: getQuickReply(),
+        },
+      ],
+    });
+  }
+}
+
+async function replyImmediateNoteCreation(replyToken, conversationId, userText) {
+  try {
+    const parsed = await parseNoteFromText(userText);
+    await db.addNote(conversationId, parsed);
+    const notes = await db.getNotes(conversationId);
+    const flexCard = createNotesFlex(notes);
+    await client.replyMessage({
+      replyToken,
+      messages: [flexCard],
+    });
+    console.log(`[notes] added note for ${conversationId}: ${parsed.title}`);
+  } catch (err) {
+    console.error('[notes] creation error:', err.message);
+    await client.replyMessage({
+      replyToken,
+      messages: [
+        {
+          type: 'text',
+          text: `📝 已為您記錄：「${userText}」`,
+          quickReply: getQuickReply(),
+        },
+      ],
+    });
+  }
+}
+
+async function replyImmediateSynthesis(replyToken, conversationId, source) {
+  try {
+    const messages = await db.getMessages(conversationId);
+    const notes = await db.getNotes(conversationId);
+    const displayName = await getDisplayName(source);
+
+    const synthData = await synthesizeAll({
+      messages,
+      notes,
+      displayName,
+    });
+
+    const flexCard = createSynthesisFlex({ data: synthData });
+    await client.replyMessage({
+      replyToken,
+      messages: [flexCard],
+    });
+    console.log(`[synthesis] replied all-in-one synthesis for ${conversationId}`);
+  } catch (err) {
+    console.error('[synthesis] reply error:', err.message);
+    await client.replyMessage({
+      replyToken,
+      messages: [
+        {
+          type: 'text',
+          text: '📊 智能統整報告生成中發生錯誤，請稍後重試。',
           quickReply: getQuickReply(),
         },
       ],
@@ -385,16 +583,16 @@ async function replyImmediateNews(replyToken, options = { topic: 'all' }) {
 
 async function replyImmediateNewsAnalysis(replyToken, newsTitle) {
   try {
-    const analysis = await analyzeNewsDeeply(newsTitle);
+    const analysisData = await analyzeNewsDeeply(newsTitle);
     const flexCard = createNewsAnalysisFlex({
       title: newsTitle,
-      analysisText: analysis,
+      data: analysisData,
     });
     await client.replyMessage({
       replyToken,
       messages: [flexCard],
     });
-    console.log(`[news-analysis] replied analysis for: ${newsTitle}`);
+    console.log(`[news-analysis] replied structured analysis for: ${newsTitle}`);
   } catch (err) {
     console.error('[news-analysis] reply error:', err.message);
     await client.replyMessage({

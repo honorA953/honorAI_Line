@@ -89,6 +89,64 @@ async function clearSeenNews() {
   }
 }
 
+const NOTES_PREFIX = 'linechat:notes:';
+
+async function addNote(conversationId, note) {
+  try {
+    const noteRecord = {
+      id: note.id || `note_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      title: note.title || '一般記事',
+      category: note.category || '📋 待辦',
+      details: note.details || '',
+      dueDate: note.dueDate || '',
+      createdAt: note.createdAt || new Date().toISOString(),
+    };
+    await redis.rpush(NOTES_PREFIX + conversationId, JSON.stringify(noteRecord));
+    return noteRecord;
+  } catch (err) {
+    console.error('[db] addNote error:', err.message);
+    return null;
+  }
+}
+
+async function getNotes(conversationId) {
+  try {
+    const raw = (await redis.lrange(NOTES_PREFIX + conversationId, 0, -1).catch(() => [])) || [];
+    return raw.map((item) => (typeof item === 'string' ? JSON.parse(item) : item)).filter(Boolean);
+  } catch (err) {
+    console.error('[db] getNotes error:', err.message);
+    return [];
+  }
+}
+
+async function removeNote(conversationId, noteIdOrIndex) {
+  try {
+    const notes = await getNotes(conversationId);
+    let filtered;
+    if (typeof noteIdOrIndex === 'number') {
+      filtered = notes.filter((_, idx) => idx !== noteIdOrIndex);
+    } else {
+      filtered = notes.filter((n) => n.id !== noteIdOrIndex && !n.title.includes(noteIdOrIndex));
+    }
+    await redis.del(NOTES_PREFIX + conversationId);
+    for (const n of filtered) {
+      await redis.rpush(NOTES_PREFIX + conversationId, JSON.stringify(n));
+    }
+    return filtered;
+  } catch (err) {
+    console.error('[db] removeNote error:', err.message);
+    return [];
+  }
+}
+
+async function clearNotes(conversationId) {
+  try {
+    await redis.del(NOTES_PREFIX + conversationId);
+  } catch (err) {
+    console.error('[db] clearNotes error:', err.message);
+  }
+}
+
 module.exports = {
   registerConversation,
   appendMessage,
@@ -99,8 +157,14 @@ module.exports = {
   getSeenNewsUrls,
   recordSeenNews,
   clearSeenNews,
+  addNote,
+  getNotes,
+  removeNote,
+  clearNotes,
   HISTORY_KEY,
   CONVERSATIONS_SET_KEY,
   SEEN_NEWS_KEY,
+  NOTES_PREFIX,
 };
+
 

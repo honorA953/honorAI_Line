@@ -184,7 +184,7 @@ async function summarizeConstructionNews(rawItems, { topic = 'all', seenList = [
         { role: 'user', content: rawListText },
       ],
       temperature: 0.7,
-      max_tokens: 1500,
+      max_tokens: 2500,
     });
 
     const raw = completion.choices[0]?.message?.content?.trim() || '';
