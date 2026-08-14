@@ -43,6 +43,62 @@ async function getAllConversationIds() {
   }
 }
 
+function getDayTimestampRange(date = new Date(), timeZone = 'Asia/Taipei') {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const dateStr = formatter.format(date); // YYYY-MM-DD
+  const startOfDay = new Date(`${dateStr}T00:00:00+08:00`).getTime();
+  const endOfDay = new Date(`${dateStr}T23:59:59.999+08:00`).getTime();
+  return { dateStr, startOfDay, endOfDay };
+}
+
+async function getTodayMessages(conversationId, timeZone = 'Asia/Taipei') {
+  const messages = await getMessages(conversationId);
+  if (!messages || !messages.length) return [];
+
+  const { startOfDay, endOfDay } = getDayTimestampRange(new Date(), timeZone);
+  const todayMsgs = messages.filter((m) => {
+    const ts = typeof m.timestamp === 'number' ? m.timestamp : new Date(m.timestamp).getTime();
+    return ts >= startOfDay && ts <= endOfDay;
+  });
+
+  // 若今日時段有訊息則回傳今日全天紀錄；若為跨日或剛過午夜則回傳過去 24 小時內之訊息
+  if (todayMsgs.length > 0) return todayMsgs;
+
+  const past24hCutoff = Date.now() - 24 * 60 * 60 * 1000;
+  return messages.filter((m) => {
+    const ts = typeof m.timestamp === 'number' ? m.timestamp : new Date(m.timestamp).getTime();
+    return ts >= past24hCutoff;
+  });
+}
+
+async function pruneOldMessages(conversationId, maxAgeDays = 3) {
+  try {
+    const messages = await getMessages(conversationId);
+    if (!messages || !messages.length) return;
+    const cutoff = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
+    const fresh = messages.filter((m) => {
+      const ts = typeof m.timestamp === 'number' ? m.timestamp : new Date(m.timestamp).getTime();
+      return ts >= cutoff;
+    });
+    if (fresh.length !== messages.length) {
+      await redis.del(KEY_PREFIX + conversationId);
+      if (fresh.length > 0) {
+        await redis.rpush(
+          KEY_PREFIX + conversationId,
+          ...fresh.map((m) => JSON.stringify(m))
+        );
+      }
+    }
+  } catch (err) {
+    console.error('[db] pruneOldMessages error:', err.message);
+  }
+}
+
 async function clearMessages(conversationId) {
   await redis.del(KEY_PREFIX + conversationId);
 }
@@ -151,6 +207,8 @@ module.exports = {
   registerConversation,
   appendMessage,
   getMessages,
+  getTodayMessages,
+  pruneOldMessages,
   getAllConversationIds,
   clearMessages,
   appendHistory,

@@ -2785,6 +2785,177 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
   };
 }
 
+/**
+ * 建立新加入好友/群組的歡迎與功能導引 Flex 卡片
+ */
+function createWelcomeFlex() {
+  const bubble = {
+    type: 'bubble',
+    size: 'giga',
+    header: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: THEME.headerBg,
+      paddingAll: '16px',
+      contents: [
+        {
+          type: 'box',
+          layout: 'horizontal',
+          contents: [
+            {
+              type: 'box',
+              layout: 'horizontal',
+              backgroundColor: THEME.badgeBg,
+              cornerRadius: 'xxl',
+              paddingStart: '8px',
+              paddingEnd: '8px',
+              paddingTop: '3px',
+              paddingBottom: '3px',
+              contents: [
+                {
+                  type: 'text',
+                  text: '🏛️ AI 建築智庫特助',
+                  size: 'xxs',
+                  weight: 'bold',
+                  color: THEME.badgeText,
+                },
+              ],
+            },
+            {
+              type: 'text',
+              text: '全功能上線',
+              size: 'xxs',
+              color: THEME.badgeSub,
+              align: 'end',
+              gravity: 'center',
+            },
+          ],
+        },
+        {
+          type: 'text',
+          text: '您好！我是您的專屬建築智庫「大大」',
+          weight: 'bold',
+          size: 'md',
+          color: THEME.headerTitle,
+          wrap: true,
+          margin: 'md',
+        },
+      ],
+    },
+    body: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: THEME.bodyBg,
+      paddingAll: '16px',
+      contents: [
+        {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: THEME.cardHighlightBg,
+          cornerRadius: '10px',
+          borderWidth: '1px',
+          borderColor: THEME.cardHighlightBorder,
+          paddingAll: '12px',
+          contents: [
+            {
+              type: 'text',
+              text: '🤖 隨時互動諮詢方式',
+              size: 'xs',
+              weight: 'bold',
+              color: THEME.titleText,
+            },
+            {
+              type: 'text',
+              text: '• 1對1私聊：直接傳送任何問題、圖片或語音\n• 群組對話：呼叫「大大」、「@AI」、「請問」、「請教」或「幫我」即可觸發諮詢',
+              size: 'xs',
+              color: THEME.bodyText,
+              wrap: true,
+              margin: 'sm',
+            },
+          ],
+        },
+        {
+          type: 'box',
+          layout: 'vertical',
+          margin: 'md',
+          paddingAll: '12px',
+          backgroundColor: THEME.cardBg,
+          cornerRadius: '10px',
+          borderWidth: '1px',
+          borderColor: THEME.cardBorder,
+          contents: [
+            {
+              type: 'text',
+              text: '⚡ 核心功能導引',
+              size: 'xs',
+              weight: 'bold',
+              color: THEME.titleText,
+            },
+            {
+              type: 'text',
+              text: '1. 📰 08:00 晨間建築情報自動推播\n2. 🗓️ 21:00 全天對話與待辦深度總結\n3. 📝 智能記事：「記下：明天上午9點會勘」\n4. 📋 查看待辦：輸入「看記事」\n5. 📊 跨維度統整：輸入「智能統整」\n6. 🔄 新聞換批：輸入「換新聞」',
+              size: 'xs',
+              color: THEME.bodyText,
+              wrap: true,
+              margin: 'sm',
+            },
+          ],
+        },
+      ],
+    },
+    footer: {
+      type: 'box',
+      layout: 'horizontal',
+      spacing: 'sm',
+      backgroundColor: THEME.cardBg,
+      paddingAll: '12px',
+      contents: [
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '🎛️ 智能選單',
+            text: '選單',
+          },
+          style: 'primary',
+          color: THEME.btnPrimaryBg,
+          height: 'sm',
+          flex: 1,
+        },
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '📰 今日新聞',
+            text: '今日新聞',
+          },
+          style: 'secondary',
+          height: 'sm',
+          flex: 1,
+        },
+        {
+          type: 'button',
+          action: {
+            type: 'message',
+            label: '➕ 快速記事',
+            text: '新增記事',
+          },
+          style: 'secondary',
+          height: 'sm',
+          flex: 1,
+        },
+      ],
+    },
+  };
+
+  return {
+    type: 'flex',
+    altText: '🏛️ 您好！我是您的專屬建築智庫與特助「大大」',
+    contents: bubble,
+    quickReply: getQuickReply(),
+  };
+}
+
 module.exports = {
   THEME,
   getQuickReply,
@@ -2800,4 +2971,5 @@ module.exports = {
   createNotesFlex,
   createNoteHelperFlex,
   createSynthesisFlex,
+  createWelcomeFlex,
 };

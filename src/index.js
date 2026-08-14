@@ -34,6 +34,7 @@ const {
   createNotesFlex,
   createNoteHelperFlex,
   createSynthesisFlex,
+  createWelcomeFlex,
 } = require('./flex');
 const { getDailyConstructionDigest } = require('./news');
 const {
@@ -118,9 +119,24 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
   res.sendStatus(200); // 先回200，避免LINE重送；事件非同步處理
   const events = req.body.events || [];
   for (const event of events) {
-    if (event.type !== 'message') continue;
     const conversationId = getConversationId(event.source);
     await db.registerConversation(conversationId);
+
+    // 處理加好友或加入群組事件，立即回傳曜石黑頂級歡迎與功能導引卡片
+    if (event.type === 'follow' || event.type === 'join') {
+      try {
+        await client.replyMessage({
+          replyToken: event.replyToken,
+          messages: [createWelcomeFlex()],
+        });
+        console.log(`[webhook] sent welcome card for ${event.type} to ${conversationId}`);
+      } catch (err) {
+        console.error('[webhook] error sending welcome card:', err.message);
+      }
+      continue;
+    }
+
+    if (event.type !== 'message') continue;
     runSerialized(conversationId, () => handleEvent(event, conversationId)).catch((err) =>
       console.error('[webhook] event error:', err)
     );
@@ -256,27 +272,39 @@ async function handleEvent(event, conversationId) {
         }
       }
     } else {
-      // 若非網址，判斷是否為 1對1 對話或群組主動提問
+      // 判斷是否為 1對1 私聊
       const isOneOnOne = event.source.type === 'user';
-      
-      // 支援 LINE 原生 @ 標註 (mentionees)、半形@/全形＠、AI/ai、請問、請教、小幫手、助手等
+
+      // 支援 LINE 原生 @ 標註 (mentionees)
       const hasMention = Boolean(
         event.message.mention &&
         event.message.mention.mentionees &&
         event.message.mention.mentionees.length > 0
       );
 
-      const isAiTrigger =
-        hasMention ||
-        /^[@＠]?(ai|助手|助理|問題|bot|大大|小幫手)/i.test(rawText) ||
-        /^(請教ai|請教|請問ai|請問|請幫我|請分析|幫我)/i.test(rawText) ||
+      // 群組呼叫詞（任何位置包含 @大大、大大、@AI、AI、小幫手、助手、助理、bot）
+      const isCallByName =
+        /@(大大|ai|助手|助理|bot|小幫手)/i.test(rawText) ||
+        /^[@＠]?(ai|大大|小幫手|助手|助理|bot|問題)/i.test(rawText) ||
+        /(大大|小幫手|助手|助理)/i.test(rawText) ||
         rawText.startsWith('@') ||
         rawText.startsWith('＠');
 
+      // 提問動詞（開頭為請問、請教、幫我、想請問、可以幫我、分析、評估等，或結尾為問號）
+      const isAskingQuestion =
+        /^(請教|請問|請幫我|幫我|請分析|請評估|想請問|想請教|可以幫我|請教ai|請問ai|請推薦|請試算|幫我查|查一下)/i.test(rawText) ||
+        /^(問|查|分析|評估|試算)[:：\s]/i.test(rawText) ||
+        /[?？]$/.test(rawText);
+
+      const isAiTrigger = hasMention || isCallByName || isAskingQuestion;
+
       if (isOneOnOne || isAiTrigger) {
+        // 清理提問前綴與標籤
         const cleanQuestion = rawText
-          .replace(/^([@＠]?(ai|助手|助理|問題|bot|大大|小幫手)|請教ai|請教|請問ai|請問|請幫我|請分析|幫我)[:：\s]*/i, '')
+          .replace(/^([@＠]?(ai|助手|助理|問題|bot|大大|小幫手)|請教ai|請教|請問ai|請問|請幫我|請分析|請評估|想請問|想請教|可以幫我|幫我)[:：\s]*/i, '')
+          .replace(/[@＠](大大|ai|助手|助理|bot|小幫手)/gi, '')
           .trim();
+
         const displayName = await getDisplayName(event.source);
         const recentMessages = await db.getMessages(conversationId);
         const notes = await db.getNotes(conversationId);
@@ -503,14 +531,14 @@ async function replyImmediateSynthesis(replyToken, conversationId, source) {
 }
 
 async function replyImmediateSummary(replyToken, conversationId) {
-  const messages = await db.getMessages(conversationId);
+  const messages = await db.getTodayMessages(conversationId);
   if (!messages.length) {
     await client.replyMessage({
       replyToken,
       messages: [
         {
           type: 'text',
-          text: '目前還沒有累積新的對話內容。可點擊下方按鈕閱讀今日新聞或直接向 AI 諮詢！',
+          text: '目前今日還沒有累積新的對話內容。可點擊下方按鈕閱讀今日新聞或直接向 AI 諮詢！',
           quickReply: getQuickReply(),
         },
       ],
@@ -521,7 +549,7 @@ async function replyImmediateSummary(replyToken, conversationId) {
   const summary = await summarizeConversation(messages);
   try {
     const flexCard = createExecutiveSummaryFlex({
-      title: '📋 對話深度總結報告',
+      title: '📋 今日即時對話總結',
       summaryText: summary,
     });
     await client.replyMessage({
@@ -535,7 +563,7 @@ async function replyImmediateSummary(replyToken, conversationId) {
       messages: [
         {
           type: 'text',
-          text: `📋 對話深度總結\n\n${summary}`,
+          text: `📋 今日即時對話總結\n\n${summary}`,
           quickReply: getQuickReply(),
         },
       ],
@@ -546,10 +574,10 @@ async function replyImmediateSummary(replyToken, conversationId) {
     conversationId,
     messages,
     summary,
+    type: 'on_demand',
     generatedAt: new Date().toISOString(),
   });
-  await db.clearMessages(conversationId);
-  console.log(`[summary] replied on-demand & cleared for ${conversationId}`);
+  console.log(`[summary] replied on-demand (retained ${messages.length} messages) for ${conversationId}`);
 }
 
 async function replyImmediateNews(replyToken, options = { topic: 'all' }) {

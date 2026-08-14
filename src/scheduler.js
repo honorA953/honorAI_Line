@@ -1,31 +1,9 @@
 const cron = require('node-cron');
 const { client } = require('./line');
 const db = require('./db');
-const { summarizeMessages } = require('./summarize');
+const { summarizeConversation } = require('./summarize');
 const { createExecutiveSummaryFlex, createConstructionNewsFlex } = require('./flex');
 const { getDailyConstructionDigest } = require('./news');
-
-const MAX_PER_BATCH = parseInt(process.env.MAX_MESSAGES_PER_SUMMARY || '300', 10);
-
-function chunk(array, size) {
-  const out = [];
-  for (let i = 0; i < array.length; i += size) out.push(array.slice(i, i + size));
-  return out;
-}
-
-// 訊息量超過單次上限時，先分段摘要，再把各段摘要合併成最終摘要
-async function summarizeConversation(messages) {
-  if (messages.length <= MAX_PER_BATCH) {
-    return summarizeMessages(messages);
-  }
-  const batches = chunk(messages, MAX_PER_BATCH);
-  const partials = [];
-  for (const batch of batches) {
-    partials.push(await summarizeMessages(batch));
-  }
-  const combined = partials.map((p, i) => `【第${i + 1}段摘要】\n${p}`).join('\n\n');
-  return summarizeMessages([{ displayName: '系統', text: combined, timestamp: Date.now() }]);
-}
 
 function extractTargetId(conversationId) {
   if (!conversationId) return null;
@@ -37,13 +15,16 @@ function extractTargetId(conversationId) {
 }
 
 /**
- * 執行每日晚間對話總結與歸檔
+ * 執行每日晚間對話總結與歸檔（包含整天所有發言紀錄）
  */
 async function runSummaryJob() {
   const conversationIds = await db.getAllConversationIds();
   for (const conversationId of conversationIds) {
-    const messages = await db.getMessages(conversationId);
-    if (!messages.length) continue;
+    const messages = await db.getTodayMessages(conversationId);
+    if (!messages.length) {
+      console.log(`[summary] No messages found today for ${conversationId}`);
+      continue;
+    }
 
     try {
       const summary = await summarizeConversation(messages);
@@ -53,11 +34,11 @@ async function runSummaryJob() {
       let pushMsg;
       try {
         pushMsg = createExecutiveSummaryFlex({
-          title: '🗓️ 今日對話總結與智庫簡報',
+          title: '🗓️ 今日全天對話總結與智庫簡報',
           summaryText: summary,
         });
       } catch (_) {
-        pushMsg = { type: 'text', text: `🗓️ 今日總結\n\n${summary}` };
+        pushMsg = { type: 'text', text: `🗓️ 今日全天對話總結\n\n${summary}` };
       }
 
       await client.pushMessage({
@@ -70,8 +51,9 @@ async function runSummaryJob() {
         summary,
         generatedAt: new Date().toISOString(),
       });
-      await db.clearMessages(conversationId);
-      console.log(`[summary] pushed & cleared for ${conversationId}`);
+      // 清理超過 3 天的舊紀錄，保留最近對話供查閱與 AI 諮詢
+      await db.pruneOldMessages(conversationId, 3);
+      console.log(`[summary] pushed & archived for ${conversationId} (${messages.length} messages)`);
     } catch (err) {
       console.error(`[summary] failed for ${conversationId}:`, err.message);
     }
@@ -144,21 +126,29 @@ async function runNewsJob() {
 }
 
 function startScheduler() {
-  // 晚間對話總結（預設 21:00）
+  // 晚間對話總結（預設 21:00 台北時區）
   const summaryCron = process.env.SUMMARY_CRON || '0 21 * * *';
-  cron.schedule(summaryCron, () => {
-    console.log(`[scheduler] running summary job (${new Date().toISOString()})`);
-    runSummaryJob();
-  });
-  console.log(`[scheduler] registered summary cron: ${summaryCron}`);
+  cron.schedule(
+    summaryCron,
+    () => {
+      console.log(`[scheduler] running summary job (${new Date().toISOString()})`);
+      runSummaryJob();
+    },
+    { timezone: 'Asia/Taipei' }
+  );
+  console.log(`[scheduler] registered summary cron: ${summaryCron} (Asia/Taipei)`);
 
-  // 晨間建築新聞推播（預設 08:00）
+  // 晨間建築新聞推播（預設 08:00 台北時區）
   const newsCron = process.env.CONSTRUCTION_NEWS_CRON || '0 8 * * *';
-  cron.schedule(newsCron, () => {
-    console.log(`[scheduler] running daily construction news job (${new Date().toISOString()})`);
-    runNewsJob();
-  });
-  console.log(`[scheduler] registered construction news cron: ${newsCron}`);
+  cron.schedule(
+    newsCron,
+    () => {
+      console.log(`[scheduler] running daily construction news job (${new Date().toISOString()})`);
+      runNewsJob();
+    },
+    { timezone: 'Asia/Taipei' }
+  );
+  console.log(`[scheduler] registered construction news cron: ${newsCron} (Asia/Taipei)`);
 }
 
 module.exports = {
