@@ -8,11 +8,13 @@ const redis = new Redis({
 const KEY_PREFIX = 'linechat:messages:';
 const HISTORY_KEY = 'linechat:history';
 const CONVERSATIONS_SET_KEY = 'linechat:conversations';
+const registeredConversations = new Set();
 
-// 登記對話 ID 至活躍訂閱集合
+// 登記對話 ID 至活躍訂閱集合（利用記憶體快取避免重複發起 Redis 網路請求）
 async function registerConversation(conversationId) {
   try {
-    if (conversationId && !conversationId.startsWith('unknown:')) {
+    if (conversationId && !conversationId.startsWith('unknown:') && !registeredConversations.has(conversationId)) {
+      registeredConversations.add(conversationId);
       await redis.sadd(CONVERSATIONS_SET_KEY, conversationId);
     }
   } catch (err) {
@@ -29,6 +31,17 @@ async function appendMessage(conversationId, message) {
 async function getMessages(conversationId) {
   const raw = await redis.lrange(KEY_PREFIX + conversationId, 0, -1);
   return raw.map((item) => (typeof item === 'string' ? JSON.parse(item) : item));
+}
+
+// 快速取得最近 N 則訊息（極速精簡，專為 AI 即時諮詢加速設計）
+async function getRecentMessages(conversationId, limit = 8) {
+  try {
+    const raw = await redis.lrange(KEY_PREFIX + conversationId, -limit, -1);
+    return raw.map((item) => (typeof item === 'string' ? JSON.parse(item) : item)).filter(Boolean);
+  } catch (err) {
+    console.error('[db] getRecentMessages error:', err.message);
+    return [];
+  }
 }
 
 async function getAllConversationIds() {
@@ -203,10 +216,111 @@ async function clearNotes(conversationId) {
   }
 }
 
+const SETTINGS_PREFIX = 'linechat:settings:';
+const settingsCache = new Map();
+const SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000; // 快取 5 分鐘
+
+async function getConversationSettings(conversationId) {
+  const cached = settingsCache.get(conversationId);
+  if (cached && Date.now() - cached.time < SETTINGS_CACHE_TTL_MS) {
+    return cached.data;
+  }
+
+  try {
+    const raw = await redis.get(SETTINGS_PREFIX + conversationId);
+    const defaultNews = process.env.DEFAULT_NEWS_ENABLED === 'true';
+    const defaultSummary = process.env.DEFAULT_SUMMARY_ENABLED !== 'false';
+    let data;
+    if (!raw) {
+      data = {
+        newsEnabled: defaultNews,
+        summaryEnabled: defaultSummary,
+        isDefault: true,
+      };
+    } else {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      data = {
+        newsEnabled: typeof parsed.newsEnabled === 'boolean' ? parsed.newsEnabled : defaultNews,
+        summaryEnabled: typeof parsed.summaryEnabled === 'boolean' ? parsed.summaryEnabled : defaultSummary,
+        updatedAt: parsed.updatedAt,
+        isDefault: false,
+      };
+    }
+    settingsCache.set(conversationId, { data, time: Date.now() });
+    return data;
+  } catch (err) {
+    console.error('[db] getConversationSettings error:', err.message);
+    return {
+      newsEnabled: process.env.DEFAULT_NEWS_ENABLED === 'true',
+      summaryEnabled: process.env.DEFAULT_SUMMARY_ENABLED !== 'false',
+      isDefault: true,
+    };
+  }
+}
+
+async function updateConversationSettings(conversationId, partial) {
+  try {
+    await registerConversation(conversationId);
+    const current = await getConversationSettings(conversationId);
+    const updated = {
+      ...current,
+      ...partial,
+      isDefault: false,
+      updatedAt: new Date().toISOString(),
+    };
+    settingsCache.set(conversationId, { data: updated, time: Date.now() });
+    await redis.set(SETTINGS_PREFIX + conversationId, JSON.stringify(updated));
+    return updated;
+  } catch (err) {
+    console.error('[db] updateConversationSettings error:', err.message);
+    return {
+      newsEnabled: partial.newsEnabled ?? false,
+      summaryEnabled: partial.summaryEnabled ?? true,
+      isDefault: false,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+}
+
+async function getNewsSubscriberIds() {
+  try {
+    const allConvs = await getAllConversationIds();
+    const subscribers = [];
+    for (const convId of allConvs) {
+      const settings = await getConversationSettings(convId);
+      if (settings.newsEnabled) {
+        subscribers.push(convId);
+      }
+    }
+    return subscribers;
+  } catch (err) {
+    console.error('[db] getNewsSubscriberIds error:', err.message);
+    return [];
+  }
+}
+
+async function getSummarySubscriberIds() {
+  try {
+    const allConvs = await getAllConversationIds();
+    const subscribers = [];
+    for (const convId of allConvs) {
+      const settings = await getConversationSettings(convId);
+      if (settings.summaryEnabled) {
+        subscribers.push(convId);
+      }
+    }
+    return subscribers;
+  } catch (err) {
+    console.error('[db] getSummarySubscriberIds error:', err.message);
+    return [];
+  }
+}
+
 module.exports = {
   registerConversation,
   appendMessage,
   getMessages,
+  getRecentMessages,
   getTodayMessages,
   pruneOldMessages,
   getAllConversationIds,
@@ -219,10 +333,16 @@ module.exports = {
   getNotes,
   removeNote,
   clearNotes,
+  getConversationSettings,
+  updateConversationSettings,
+  getNewsSubscriberIds,
+  getSummarySubscriberIds,
   HISTORY_KEY,
   CONVERSATIONS_SET_KEY,
   SEEN_NEWS_KEY,
   NOTES_PREFIX,
+  SETTINGS_PREFIX,
 };
+
 
 

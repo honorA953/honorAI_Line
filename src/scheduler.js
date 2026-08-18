@@ -15,10 +15,13 @@ function extractTargetId(conversationId) {
 }
 
 /**
- * 執行每日晚間對話總結與歸檔（包含整天所有發言紀錄）
+ * 執行每日晚間對話總結與歸檔（僅推播給有開啟摘要訂閱的對話）
  */
 async function runSummaryJob() {
-  const conversationIds = await db.getAllConversationIds();
+  console.log('[summary-job] Starting daily conversation summary push...');
+  const conversationIds = await db.getSummarySubscriberIds();
+  console.log(`[summary-job] Found ${conversationIds.length} subscribed conversation(s) for summary.`);
+
   for (const conversationId of conversationIds) {
     const messages = await db.getTodayMessages(conversationId);
     if (!messages.length) {
@@ -61,7 +64,7 @@ async function runSummaryJob() {
 }
 
 /**
- * 執行每日晨間建築與營造產業新聞推播
+ * 執行每日晨間建築與營造產業新聞推播（僅推播給有開啟新聞訂閱的對話）
  */
 async function runNewsJob() {
   console.log('[news-job] Starting daily construction news push...');
@@ -86,26 +89,26 @@ async function runNewsJob() {
       pushMsg = { type: 'text', text: textLines.join('\n') };
     }
 
-    // 取得推播目標（可由環境變數指定，若未指定則推播給所有已知活躍對話）
+    // 取得推播目標（可由環境變數指定，若未指定則推播給所有開啟新聞訂閱之對話）
     let targetIds = [];
     if (process.env.NEWS_PUSH_TARGET) {
       targetIds = process.env.NEWS_PUSH_TARGET.split(',')
         .map((t) => extractTargetId(t.trim()))
         .filter(Boolean);
     } else {
-      const allConvs = await db.getAllConversationIds();
-      targetIds = allConvs.map(extractTargetId).filter(Boolean);
+      const subscriberConvs = await db.getNewsSubscriberIds();
+      targetIds = subscriberConvs.map(extractTargetId).filter(Boolean);
     }
 
     // 去除重複 ID
     targetIds = Array.from(new Set(targetIds));
 
     if (targetIds.length === 0) {
-      console.log('[news-job] No subscriber targets found.');
+      console.log('[news-job] No subscribed targets found (all opted-out or empty).');
       return { success: true, count: 0 };
     }
 
-    console.log(`[news-job] Pushing construction news to ${targetIds.length} target(s)...`);
+    console.log(`[news-job] Pushing construction news to ${targetIds.length} subscribed target(s)...`);
     for (const targetId of targetIds) {
       try {
         await client.pushMessage({

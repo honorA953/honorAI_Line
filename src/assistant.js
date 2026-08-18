@@ -172,8 +172,8 @@ async function askAssistant({ question, displayName = '使用者', recentMessage
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userContent },
       ],
-      temperature: 0.7,
-      max_tokens: 900,
+      temperature: 0.5,
+      max_tokens: 500,
     });
 
     const raw = completion.choices[0]?.message?.content?.trim() || '';

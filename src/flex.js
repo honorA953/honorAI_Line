@@ -47,7 +47,7 @@ const THEME = {
 };
 
 /**
- * 產生常駐底部 LINE Quick Reply 快捷按鈕列
+ * 產生常駐底部 LINE Quick Reply 快捷按鈕列 (精簡乾淨 5 核心按鈕)
  */
 function getQuickReply() {
   const items = [
@@ -55,7 +55,7 @@ function getQuickReply() {
       type: 'action',
       action: {
         type: 'message',
-        label: '➕ 快速記事',
+        label: '➕ 記一筆',
         text: '新增記事',
       },
     },
@@ -63,7 +63,7 @@ function getQuickReply() {
       type: 'action',
       action: {
         type: 'message',
-        label: '📝 記事待辦',
+        label: '📝 看記事',
         text: '看記事',
       },
     },
@@ -79,32 +79,16 @@ function getQuickReply() {
       type: 'action',
       action: {
         type: 'message',
-        label: '🔄 換批新聞',
-        text: '換新聞',
+        label: '📰 今日新聞',
+        text: '今日新聞',
       },
     },
     {
       type: 'action',
       action: {
         type: 'message',
-        label: '🌿 綠建ESG',
-        text: '綠建ESG',
-      },
-    },
-    {
-      type: 'action',
-      action: {
-        type: 'message',
-        label: '📜 房市都更',
-        text: '房市都更',
-      },
-    },
-    {
-      type: 'action',
-      action: {
-        type: 'message',
-        label: '🎛️ 智能選單',
-        text: '選單',
+        label: '⚙️ 推播設定',
+        text: '推播設定',
       },
     },
   ];
@@ -1047,7 +1031,7 @@ function createConstructionNewsFlex(digest) {
           },
           {
             type: 'text',
-            text: item.source || '媒體報導',
+            text: `${item.source || '即時情報'}${item.timeAgo ? ' · ' + item.timeAgo : ''}`,
             size: 'xxs',
             color: THEME.subText,
             align: 'end',
@@ -1099,13 +1083,13 @@ function createConstructionNewsFlex(digest) {
 
     // 操作按鈕列
     const actionButtons = [];
-    if (item.url) {
+    if (item.url && typeof item.url === 'string' && item.url.startsWith('http')) {
       actionButtons.push({
         type: 'button',
         action: {
           type: 'uri',
-          label: '🔗 原文',
-          uri: item.url,
+          label: '🔗 原文報導',
+          uri: item.url.trim(),
         },
         style: 'secondary',
         height: 'sm',
@@ -1249,12 +1233,12 @@ function createConstructionNewsFlex(digest) {
 }
 
 /**
- * 建立 🎛️ 智能控制台 / 快捷功能選單 Flex 卡片 (統一黑曜金)
+ * 建立 🎛️ 智能控制台 / 快捷功能選單 Flex 卡片 (極簡典雅曜石黑)
  */
 function createMenuFlex() {
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -1277,7 +1261,7 @@ function createMenuFlex() {
               contents: [
                 {
                   type: 'text',
-                  text: '⚡ COMMAND HUB',
+                  text: '⚡ QUICK MENU',
                   size: 'xxs',
                   weight: 'bold',
                   color: THEME.badgeText,
@@ -1286,7 +1270,7 @@ function createMenuFlex() {
             },
             {
               type: 'text',
-              text: '全功能快捷控制台',
+              text: '快捷功能選單',
               size: 'xxs',
               color: THEME.badgeSub,
               align: 'end',
@@ -1296,7 +1280,7 @@ function createMenuFlex() {
         },
         {
           type: 'text',
-          text: '🏛️ AI 建築智庫與智慧特助',
+          text: '🏛️ AI 建築特助 · 核心控制台',
           weight: 'bold',
           size: 'md',
           color: THEME.headerTitle,
@@ -1304,7 +1288,7 @@ function createMenuFlex() {
         },
         {
           type: 'text',
-          text: '點擊下方按鈕即可立即取得最新資訊，無需手動輸入。',
+          text: '點選下方快捷功能即可直接執行。',
           size: 'xs',
           color: THEME.badgeSub,
           margin: 'xs',
@@ -1319,10 +1303,10 @@ function createMenuFlex() {
       paddingAll: '16px',
       spacing: 'md',
       contents: [
-        // 區塊 1: 記事本與深度統整
+        // 區塊 1: 待辦與工程記事
         {
           type: 'text',
-          text: '📝 智能記事與全方位統整',
+          text: '📝 待辦與工程記事',
           size: 'xs',
           weight: 'bold',
           color: THEME.titleText,
@@ -1336,7 +1320,7 @@ function createMenuFlex() {
               type: 'button',
               action: {
                 type: 'message',
-                label: '➕ 快捷記一筆',
+                label: '➕ 記一筆',
                 text: '新增記事',
               },
               style: 'primary',
@@ -1348,7 +1332,7 @@ function createMenuFlex() {
               type: 'button',
               action: {
                 type: 'message',
-                label: '📝 待辦記事清單',
+                label: '📋 看記事',
                 text: '看記事',
               },
               style: 'primary',
@@ -1359,6 +1343,19 @@ function createMenuFlex() {
           ],
         },
         {
+          type: 'separator',
+          margin: 'md',
+          color: THEME.cardBorder,
+        },
+        // 區塊 2: 智能統整與對話摘要
+        {
+          type: 'text',
+          text: '📊 智能統整與摘要',
+          size: 'xs',
+          weight: 'bold',
+          color: THEME.titleText,
+        },
+        {
           type: 'box',
           layout: 'horizontal',
           spacing: 'sm',
@@ -1367,7 +1364,7 @@ function createMenuFlex() {
               type: 'button',
               action: {
                 type: 'message',
-                label: '📊 全方位智能統整',
+                label: '📊 智能統整',
                 text: '智能統整',
               },
               style: 'secondary',
@@ -1378,7 +1375,7 @@ function createMenuFlex() {
               type: 'button',
               action: {
                 type: 'message',
-                label: '📋 對話即時摘要',
+                label: '📋 對話摘要',
                 text: '摘要',
               },
               style: 'secondary',
@@ -1392,10 +1389,10 @@ function createMenuFlex() {
           margin: 'md',
           color: THEME.cardBorder,
         },
-        // 區塊 2: 即時新聞與專題
+        // 區塊 3: 建築情報與推播設定
         {
           type: 'text',
-          text: '📰 建築與營造產業情報（次次更新）',
+          text: '📰 建築情報與推播',
           size: 'xs',
           weight: 'bold',
           color: THEME.titleText,
@@ -1420,109 +1417,8 @@ function createMenuFlex() {
               type: 'button',
               action: {
                 type: 'message',
-                label: '🔄 換批新聞',
-                text: '換新聞',
-              },
-              style: 'primary',
-              height: 'sm',
-              color: THEME.btnGoldBg,
-              flex: 1,
-            },
-          ],
-        },
-        {
-          type: 'box',
-          layout: 'horizontal',
-          spacing: 'sm',
-          contents: [
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '🌿 綠建 ESG',
-                text: '綠建ESG',
-              },
-              style: 'secondary',
-              height: 'sm',
-              flex: 1,
-            },
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '📜 房市都更',
-                text: '房市都更',
-              },
-              style: 'secondary',
-              height: 'sm',
-              flex: 1,
-            },
-          ],
-        },
-        {
-          type: 'box',
-          layout: 'horizontal',
-          spacing: 'sm',
-          contents: [
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '🏛️ 空間設計',
-                text: '建築設計',
-              },
-              style: 'secondary',
-              height: 'sm',
-              flex: 1,
-            },
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '🏗️ 重大工程',
-                text: '重大工程',
-              },
-              style: 'secondary',
-              height: 'sm',
-              flex: 1,
-            },
-          ],
-        },
-        {
-          type: 'separator',
-          margin: 'md',
-          color: THEME.cardBorder,
-        },
-        // 區塊 3: 對話紀錄與管理
-        {
-          type: 'text',
-          text: '📋 對話管理與工具',
-          size: 'xs',
-          weight: 'bold',
-          color: THEME.titleText,
-        },
-        {
-          type: 'box',
-          layout: 'horizontal',
-          spacing: 'sm',
-          contents: [
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '📋 快速摘要對話',
-                text: '摘要',
-              },
-              style: 'secondary',
-              height: 'sm',
-              flex: 1,
-            },
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '💡 記事範本引導',
-                text: '新增記事',
+                label: '⚙️ 推播設定',
+                text: '推播設定',
               },
               style: 'secondary',
               height: 'sm',
@@ -1540,10 +1436,11 @@ function createMenuFlex() {
       contents: [
         {
           type: 'text',
-          text: '💡 點擊「快捷記一筆」開啟範本，或直接輸入「記下：...」',
+          text: '💡 隨時傳送「記下：...」或「@AI 題目」即可諮詢 AI',
           size: 'xxs',
           color: THEME.mutedText,
           align: 'center',
+          wrap: true,
         },
       ],
     },
@@ -1551,7 +1448,7 @@ function createMenuFlex() {
 
   return {
     type: 'flex',
-    altText: '🎛️ AI 建築智庫與智慧特助 · 快捷控制台',
+    altText: '🎛️ AI 建築特助 · 快捷功能選單',
     contents: bubble,
     quickReply: getQuickReply(),
   };
@@ -1877,7 +1774,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -2956,6 +2853,221 @@ function createWelcomeFlex() {
   };
 }
 
+/**
+ * 建立 ⚙️ 推播與定時通知設定 Flex 卡片 (曜石黑 + 香檳金質感)
+ */
+function createSettingsFlex(settings = { newsEnabled: false, summaryEnabled: true }) {
+  const newsStatusText = settings.newsEnabled ? '🟢 每日 08:00 準時推播' : '⚪ 已關閉推播';
+  const newsBtnText = settings.newsEnabled ? '關閉新聞' : '開啟新聞';
+  const newsBtnColor = settings.newsEnabled ? THEME.btnSecondaryBg : THEME.btnGoldBg;
+  const newsBtnStyle = settings.newsEnabled ? 'secondary' : 'primary';
+
+  const summaryStatusText = settings.summaryEnabled ? '🟢 每日 21:00 準時推播' : '⚪ 已關閉推播';
+  const summaryBtnText = settings.summaryEnabled ? '關閉摘要' : '開啟摘要';
+  const summaryBtnColor = settings.summaryEnabled ? THEME.btnSecondaryBg : THEME.btnGoldBg;
+  const summaryBtnStyle = settings.summaryEnabled ? 'secondary' : 'primary';
+
+  const bubble = {
+    type: 'bubble',
+    size: 'giga',
+    header: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: THEME.headerBg,
+      paddingAll: '16px',
+      contents: [
+        {
+          type: 'box',
+          layout: 'horizontal',
+          contents: [
+            {
+              type: 'box',
+              layout: 'horizontal',
+              backgroundColor: THEME.badgeBg,
+              cornerRadius: 'xxl',
+              paddingStart: '8px',
+              paddingEnd: '8px',
+              paddingTop: '3px',
+              paddingBottom: '3px',
+              contents: [
+                {
+                  type: 'text',
+                  text: '⚙️ NOTIFICATION PREFERENCES',
+                  size: 'xxs',
+                  weight: 'bold',
+                  color: THEME.badgeText,
+                },
+              ],
+            },
+            {
+              type: 'text',
+              text: '推播設定',
+              size: 'xxs',
+              color: THEME.badgeSub,
+              align: 'end',
+              gravity: 'center',
+            },
+          ],
+        },
+        {
+          type: 'text',
+          text: '🏛️ 定時推播與通知管理',
+          weight: 'bold',
+          size: 'md',
+          color: THEME.headerTitle,
+          margin: 'md',
+        },
+        {
+          type: 'text',
+          text: '您可以依需求個別開啟或關閉晨間新聞與晚間對話總結。',
+          size: 'xs',
+          color: THEME.badgeSub,
+          margin: 'xs',
+          wrap: true,
+        },
+      ],
+    },
+    body: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: THEME.bodyBg,
+      paddingAll: '16px',
+      spacing: 'md',
+      contents: [
+        // 模組 1: 晨間新聞
+        {
+          type: 'box',
+          layout: 'vertical',
+          paddingAll: '12px',
+          backgroundColor: THEME.cardBg,
+          cornerRadius: '10px',
+          borderWidth: '1px',
+          borderColor: THEME.cardBorder,
+          contents: [
+            {
+              type: 'box',
+              layout: 'horizontal',
+              contents: [
+                {
+                  type: 'text',
+                  text: '📰 晨間建築新聞 (08:00)',
+                  weight: 'bold',
+                  size: 'sm',
+                  color: THEME.titleText,
+                },
+              ],
+            },
+            {
+              type: 'text',
+              text: `目前狀態：${newsStatusText}`,
+              size: 'xs',
+              color: settings.newsEnabled ? THEME.accentGold : THEME.subText,
+              weight: settings.newsEnabled ? 'bold' : 'regular',
+              margin: 'sm',
+            },
+            {
+              type: 'text',
+              text: '彙整每日最新營造工料、房市都更、ESG綠建築與工程要聞。',
+              size: 'xxs',
+              color: THEME.mutedText,
+              wrap: true,
+              margin: 'xs',
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: settings.newsEnabled ? '🛑 關閉新聞推播' : '🔔 開啟新聞推播',
+                text: newsBtnText,
+              },
+              style: newsBtnStyle,
+              height: 'sm',
+              color: settings.newsEnabled ? undefined : THEME.btnGoldBg,
+              margin: 'md',
+            },
+          ],
+        },
+        // 模組 2: 晚間對話總結
+        {
+          type: 'box',
+          layout: 'vertical',
+          paddingAll: '12px',
+          backgroundColor: THEME.cardBg,
+          cornerRadius: '10px',
+          borderWidth: '1px',
+          borderColor: THEME.cardBorder,
+          contents: [
+            {
+              type: 'box',
+              layout: 'horizontal',
+              contents: [
+                {
+                  type: 'text',
+                  text: '📋 晚間對話總結 (21:00)',
+                  weight: 'bold',
+                  size: 'sm',
+                  color: THEME.titleText,
+                },
+              ],
+            },
+            {
+              type: 'text',
+              text: `目前狀態：${summaryStatusText}`,
+              size: 'xs',
+              color: settings.summaryEnabled ? THEME.accentGold : THEME.subText,
+              weight: settings.summaryEnabled ? 'bold' : 'regular',
+              margin: 'sm',
+            },
+            {
+              type: 'text',
+              text: '智能整理今日群組交流重點、工程決議、待辦事項與重要數字。',
+              size: 'xxs',
+              color: THEME.mutedText,
+              wrap: true,
+              margin: 'xs',
+            },
+            {
+              type: 'button',
+              action: {
+                type: 'message',
+                label: settings.summaryEnabled ? '🛑 關閉摘要推播' : '🔔 開啟摘要推播',
+                text: summaryBtnText,
+              },
+              style: summaryBtnStyle,
+              height: 'sm',
+              color: settings.summaryEnabled ? undefined : THEME.btnGoldBg,
+              margin: 'md',
+            },
+          ],
+        },
+      ],
+    },
+    footer: {
+      type: 'box',
+      layout: 'vertical',
+      backgroundColor: THEME.cardBg,
+      paddingAll: '10px',
+      contents: [
+        {
+          type: 'text',
+          text: '💡 提示：在群組中操作會套用至該群組；在私聊中操作僅套用至個人。',
+          size: 'xxs',
+          color: THEME.mutedText,
+          align: 'center',
+          wrap: true,
+        },
+      ],
+    },
+  };
+
+  return {
+    type: 'flex',
+    altText: `⚙️ 推播通知設定 (新聞:${settings.newsEnabled ? '開啟' : '關閉'} / 摘要:${settings.summaryEnabled ? '開啟' : '關閉'})`,
+    contents: bubble,
+    quickReply: getQuickReply(),
+  };
+}
+
 module.exports = {
   THEME,
   getQuickReply,
@@ -2972,4 +3084,6 @@ module.exports = {
   createNoteHelperFlex,
   createSynthesisFlex,
   createWelcomeFlex,
+  createSettingsFlex,
 };
+
