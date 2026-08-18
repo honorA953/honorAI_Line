@@ -5,43 +5,56 @@
  */
 
 const THEME = {
-  // Header 曜石黑基底
-  headerBg: '#0A0F1D',
+  // Header: 頂級深邃曜石夜黑
+  headerBg: '#0B0F19',
   headerBorder: '#1E293B',
 
-  // 標籤 Pill Badge (香檳金質感)
-  badgeBg: '#2A2012',
+  // 標籤 Pill Badge (香檳金色系 / 頂級商務)
+  badgeBg: '#1E293B',
   badgeText: '#F59E0B',
   badgeSub: '#94A3B8',
   headerTitle: '#FFFFFF',
 
-  // 內容主背景
+  // 內容主背景 (乾淨透亮純白)
   bodyBg: '#FFFFFF',
 
-  // 模組微卡片 (統一低飽和、高級感)
+  // 模組微卡片 (圓潤 12px 倒角 + 柔和高對比灰階 + 隱約邊界)
   cardBg: '#F8FAFC',
   cardBorder: '#E2E8F0',
-  cardHighlightBg: '#F1F5F9',
-  cardHighlightBorder: '#CBD5E1',
+  cardHighlightBg: '#FFFBEB', // 暖琥珀色（用於核心結論、重要決策）
+  cardHighlightBorder: '#FDE68A',
+  cardEmeraldBg: '#F0FDF4', // 翡翠綠（用於待辦行動、已完成、正常狀態）
+  cardEmeraldBorder: '#BBF7D0',
+  cardRoseBg: '#FEF2F2', // 珊瑚紅（用於風險警示、注意事項）
+  cardRoseBorder: '#FECACA',
+  cardBlueBg: '#EFF6FF', // 科技藍（用於智庫觀點、延伸補充）
+  cardBlueBorder: '#BFDBFE',
 
-  // 文字層級
+  // 文字層級 (專為手機螢幕清晰閱讀優化)
   titleText: '#0F172A',
   bodyText: '#334155',
-  subText: '#64748B',
-  mutedText: '#94A3B8',
+  subText: '#475569',
+  mutedText: '#64748B',
 
-  // 點綴色彩 (極簡 2 色系：香檳金、石板灰)
+  // 強調色
   accentGold: '#D97706',
   accentGoldBg: '#FEF3C7',
   accentGoldText: '#92400E',
-
-  accentSlate: '#475569',
-  accentSlateBg: '#F1F5F9',
+  accentEmerald: '#059669',
+  accentEmeraldBg: '#D1FAE5',
+  accentEmeraldText: '#065F46',
+  accentBlue: '#2563EB',
+  accentBlueBg: '#DBEAFE',
+  accentBlueText: '#1E40AF',
+  accentRose: '#DC2626',
+  accentRoseBg: '#FEE2E2',
+  accentRoseText: '#991B1B',
 
   // 按鈕色彩
   btnPrimaryBg: '#0F172A',
   btnPrimaryText: '#FFFFFF',
   btnGoldBg: '#D97706',
+  btnGoldText: '#FFFFFF',
   btnSecondaryBg: '#F1F5F9',
   btnSecondaryText: '#1E293B',
 };
@@ -187,7 +200,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -342,7 +355,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -529,7 +542,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -602,7 +615,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
 function createAudioFlex({ transcript = '' }) {
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -854,7 +867,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -965,7 +978,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
 }
 
 /**
- * 建立今日建築情報 Flex 卡片 (統一黑曜金簡報卡)
+ * 建立今日建築情報 Flex 卡片 (曜石黑 + 香檳金 · 手機美學優化)
  */
 function createConstructionNewsFlex(digest) {
   const dateStr = digest.date || new Date().toLocaleDateString('zh-TW');
@@ -979,22 +992,22 @@ function createConstructionNewsFlex(digest) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.cardHighlightBg,
-      cornerRadius: '10px',
+      cornerRadius: '12px',
       borderWidth: '1px',
       borderColor: THEME.cardHighlightBorder,
-      paddingAll: '12px',
+      paddingAll: '14px',
       contents: [
         {
           type: 'text',
           text: '📌 產業焦點總覽',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
-          color: THEME.titleText,
+          color: THEME.accentGoldText,
         },
         {
           type: 'text',
           text: digest.overview,
-          size: 'xs',
+          size: 'sm',
           color: THEME.bodyText,
           wrap: true,
           margin: 'xs',
@@ -1015,10 +1028,10 @@ function createConstructionNewsFlex(digest) {
             layout: 'horizontal',
             backgroundColor: THEME.badgeBg,
             cornerRadius: 'md',
-            paddingStart: '6px',
-            paddingEnd: '6px',
-            paddingTop: '2px',
-            paddingBottom: '2px',
+            paddingStart: '8px',
+            paddingEnd: '8px',
+            paddingTop: '3px',
+            paddingBottom: '3px',
             contents: [
               {
                 type: 'text',
@@ -1032,7 +1045,7 @@ function createConstructionNewsFlex(digest) {
           {
             type: 'text',
             text: `${item.source || '即時情報'}${item.timeAgo ? ' · ' + item.timeAgo : ''}`,
-            size: 'xxs',
+            size: 'xs',
             color: THEME.subText,
             align: 'end',
             gravity: 'center',
@@ -1043,7 +1056,7 @@ function createConstructionNewsFlex(digest) {
         type: 'text',
         text: item.title,
         weight: 'bold',
-        size: 'sm',
+        size: 'md',
         color: THEME.titleText,
         wrap: true,
         margin: 'sm',
@@ -1051,7 +1064,7 @@ function createConstructionNewsFlex(digest) {
       {
         type: 'text',
         text: item.summary,
-        size: 'xs',
+        size: 'sm',
         color: THEME.bodyText,
         wrap: true,
         margin: 'xs',
@@ -1064,17 +1077,17 @@ function createConstructionNewsFlex(digest) {
         type: 'box',
         layout: 'vertical',
         margin: 'sm',
-        paddingAll: '8px',
-        backgroundColor: '#FFFFFF',
-        cornerRadius: '6px',
+        paddingAll: '10px',
+        backgroundColor: THEME.cardBlueBg,
+        cornerRadius: '8px',
         borderWidth: '1px',
-        borderColor: THEME.cardBorder,
+        borderColor: THEME.cardBlueBorder,
         contents: [
           {
             type: 'text',
             text: `💡 智庫解讀：${item.insight}`,
-            size: 'xxs',
-            color: THEME.subText,
+            size: 'xs',
+            color: THEME.accentBlueText,
             wrap: true,
           },
         ],
@@ -1114,7 +1127,7 @@ function createConstructionNewsFlex(digest) {
       type: 'box',
       layout: 'horizontal',
       spacing: 'sm',
-      margin: 'sm',
+      margin: 'md',
       contents: actionButtons,
     });
 
@@ -1122,9 +1135,9 @@ function createConstructionNewsFlex(digest) {
       type: 'box',
       layout: 'vertical',
       margin: idx === 0 && !digest.overview ? 'none' : 'md',
-      paddingAll: '12px',
+      paddingAll: '14px',
       backgroundColor: THEME.cardBg,
-      cornerRadius: '10px',
+      cornerRadius: '12px',
       borderWidth: '1px',
       borderColor: THEME.cardBorder,
       contents: newsCardContents,
@@ -1133,7 +1146,7 @@ function createConstructionNewsFlex(digest) {
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -1201,7 +1214,7 @@ function createConstructionNewsFlex(digest) {
           type: 'button',
           action: {
             type: 'message',
-            label: '🔄 換下一批 (不重複)',
+            label: '🔄 換下一批',
             text: '換新聞',
           },
           style: 'primary',
@@ -1455,7 +1468,7 @@ function createMenuFlex() {
 }
 
 /**
- * 建立新聞深度智庫剖析 Flex 卡片 (統一黑曜金)
+ * 建立新聞深度智庫剖析 Flex 卡片 (曜石黑 + 香檳金 · 手機美學優化)
  */
 function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) {
   const analysis = data || {
@@ -1480,10 +1493,10 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
     layout: 'vertical',
     margin: idx === 0 ? 'none' : 'md',
     backgroundColor: sec.highlight ? THEME.cardHighlightBg : THEME.cardBg,
-    cornerRadius: '10px',
+    cornerRadius: '12px',
     borderWidth: '1px',
     borderColor: sec.highlight ? THEME.cardHighlightBorder : THEME.cardBorder,
-    paddingAll: '12px',
+    paddingAll: '14px',
     contents: [
       {
         type: 'text',
@@ -1505,7 +1518,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -1617,7 +1630,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
 }
 
 /**
- * 建立 AI 顧問問答 Flex 卡片 (統一黑曜金)
+ * 建立 AI 顧問問答 Flex 卡片 (曜石黑 + 香檳金 · 手機美學優化)
  */
 function createAssistantFlex({ question = '', data = null, answer = '' }) {
   const result = data || {
@@ -1636,22 +1649,22 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.cardHighlightBg,
-      cornerRadius: '10px',
+      cornerRadius: '12px',
       borderWidth: '1px',
       borderColor: THEME.cardHighlightBorder,
-      paddingAll: '12px',
+      paddingAll: '14px',
       contents: [
         {
           type: 'text',
           text: '💎 核心結論與策略解法',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
-          color: THEME.titleText,
+          color: THEME.accentGoldText,
         },
         {
           type: 'text',
           text: result.conclusion,
-          size: 'sm',
+          size: 'md',
           color: THEME.titleText,
           weight: 'bold',
           wrap: true,
@@ -1672,7 +1685,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
         {
           type: 'text',
           text: '•',
-          size: 'sm',
+          size: 'md',
           color: THEME.accentGold,
           flex: 0,
           weight: 'bold',
@@ -1680,7 +1693,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
         {
           type: 'text',
           text: item,
-          size: 'xs',
+          size: 'sm',
           color: THEME.bodyText,
           flex: 1,
           wrap: true,
@@ -1692,16 +1705,16 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      paddingAll: '12px',
+      paddingAll: '14px',
       backgroundColor: THEME.cardBg,
-      cornerRadius: '10px',
+      cornerRadius: '12px',
       borderWidth: '1px',
       borderColor: THEME.cardBorder,
       contents: [
         {
           type: 'text',
           text: '📐 關鍵法規與技術要點',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
           color: THEME.titleText,
         },
@@ -1711,31 +1724,31 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
   }
 
   // 3. 實務風險避坑
-  if (result.risks) {
+  if (result.risks && result.risks !== '無特定風險' && result.risks !== '無') {
     bodyContents.push({
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      backgroundColor: THEME.cardBg,
-      cornerRadius: '10px',
+      backgroundColor: THEME.cardRoseBg,
+      cornerRadius: '12px',
       borderWidth: '1px',
-      borderColor: THEME.cardBorder,
-      paddingAll: '12px',
+      borderColor: THEME.cardRoseBorder,
+      paddingAll: '14px',
       contents: [
         {
           type: 'text',
           text: '⚠️ 實務風險與避坑指南',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
-          color: THEME.titleText,
+          color: THEME.accentRoseText,
         },
         {
           type: 'text',
           text: result.risks,
-          size: 'xs',
+          size: 'sm',
           color: THEME.bodyText,
           wrap: true,
-          margin: 'sm',
+          margin: 'xs',
         },
       ],
     });
@@ -1747,26 +1760,26 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      backgroundColor: THEME.cardBg,
-      cornerRadius: '10px',
+      backgroundColor: THEME.cardEmeraldBg,
+      cornerRadius: '12px',
       borderWidth: '1px',
-      borderColor: THEME.cardBorder,
-      paddingAll: '12px',
+      borderColor: THEME.cardEmeraldBorder,
+      paddingAll: '14px',
       contents: [
         {
           type: 'text',
           text: '🚀 建議下一步行動',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
-          color: THEME.titleText,
+          color: THEME.accentEmeraldText,
         },
         {
           type: 'text',
           text: result.nextStep,
-          size: 'xs',
+          size: 'sm',
           color: THEME.bodyText,
           wrap: true,
-          margin: 'sm',
+          margin: 'xs',
         },
       ],
     });
@@ -1886,7 +1899,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
 }
 
 /**
- * 建立 📝 智能記事本與待辦清單 Flex 卡片 (統一黑曜金)
+ * 建立 📝 智能記事本與待辦清單 Flex 卡片 (曜石黑 + 香檳金 · 手機美學優化)
  */
 function createNotesFlex(notes = []) {
   const noteCards = notes.map((note, idx) => {
@@ -1900,10 +1913,10 @@ function createNotesFlex(notes = []) {
             layout: 'horizontal',
             backgroundColor: THEME.badgeBg,
             cornerRadius: 'md',
-            paddingStart: '6px',
-            paddingEnd: '6px',
-            paddingTop: '2px',
-            paddingBottom: '2px',
+            paddingStart: '8px',
+            paddingEnd: '8px',
+            paddingTop: '3px',
+            paddingBottom: '3px',
             contents: [
               {
                 type: 'text',
@@ -1917,7 +1930,7 @@ function createNotesFlex(notes = []) {
           {
             type: 'text',
             text: note.dueDate && note.dueDate !== '未指定' ? `⏳ ${note.dueDate}` : '進行中',
-            size: 'xxs',
+            size: 'xs',
             color: THEME.subText,
             align: 'end',
             gravity: 'center',
@@ -1928,7 +1941,7 @@ function createNotesFlex(notes = []) {
         type: 'text',
         text: note.title,
         weight: 'bold',
-        size: 'sm',
+        size: 'md',
         color: THEME.titleText,
         wrap: true,
         margin: 'sm',
@@ -1939,8 +1952,8 @@ function createNotesFlex(notes = []) {
       cardContents.push({
         type: 'text',
         text: note.details,
-        size: 'xs',
-        color: THEME.subText,
+        size: 'sm',
+        color: THEME.bodyText,
         wrap: true,
         margin: 'xs',
       });
@@ -1950,9 +1963,9 @@ function createNotesFlex(notes = []) {
       type: 'box',
       layout: 'vertical',
       margin: idx === 0 ? 'none' : 'md',
-      paddingAll: '12px',
+      paddingAll: '14px',
       backgroundColor: THEME.cardBg,
-      cornerRadius: '10px',
+      cornerRadius: '12px',
       borderWidth: '1px',
       borderColor: THEME.cardBorder,
       contents: cardContents,
@@ -1968,14 +1981,14 @@ function createNotesFlex(notes = []) {
             layout: 'vertical',
             paddingAll: '16px',
             backgroundColor: THEME.cardBg,
-            cornerRadius: '10px',
+            cornerRadius: '12px',
             borderWidth: '1px',
             borderColor: THEME.cardBorder,
             contents: [
               {
                 type: 'text',
                 text: '📭 目前尚無待辦記事',
-                size: 'sm',
+                size: 'md',
                 weight: 'bold',
                 color: THEME.titleText,
                 align: 'center',
@@ -1983,7 +1996,7 @@ function createNotesFlex(notes = []) {
               {
                 type: 'text',
                 text: '點選「➕ 記一筆」查看範本，或傳送「記下：下週三送審」即可建立！',
-                size: 'xs',
+                size: 'sm',
                 color: THEME.subText,
                 wrap: true,
                 margin: 'sm',
@@ -1995,7 +2008,7 @@ function createNotesFlex(notes = []) {
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -2198,7 +2211,7 @@ function createNoteHelperFlex() {
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -2306,7 +2319,7 @@ function createNoteHelperFlex() {
 }
 
 /**
- * 建立 📊 全方位智能統整報告 Flex 卡片 (統一黑曜金)
+ * 建立 📊 全方位智能統整報告 Flex 卡片 (曜石黑 + 香檳金 · 手機美學優化)
  */
 function createSynthesisFlex({ data = null, rawText = '' }) {
   const report = data || {
@@ -2326,25 +2339,25 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.cardHighlightBg,
-      cornerRadius: '10px',
+      cornerRadius: '12px',
       borderWidth: '1px',
       borderColor: THEME.cardHighlightBorder,
-      paddingAll: '12px',
+      paddingAll: '14px',
       contents: [
         {
           type: 'text',
           text: '🎯 今日工作與對話推進總結',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
-          color: THEME.titleText,
+          color: THEME.accentGoldText,
         },
         {
           type: 'text',
           text: report.overview,
-          size: 'xs',
+          size: 'sm',
           color: THEME.bodyText,
           wrap: true,
-          margin: 'sm',
+          margin: 'xs',
         },
       ],
     });
@@ -2361,7 +2374,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
         {
           type: 'text',
           text: '•',
-          size: 'sm',
+          size: 'md',
           color: THEME.accentGold,
           flex: 0,
           weight: 'bold',
@@ -2369,7 +2382,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
         {
           type: 'text',
           text: d,
-          size: 'xs',
+          size: 'sm',
           color: THEME.bodyText,
           flex: 1,
           wrap: true,
@@ -2381,18 +2394,18 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      paddingAll: '12px',
-      backgroundColor: THEME.cardBg,
-      cornerRadius: '10px',
+      paddingAll: '14px',
+      backgroundColor: THEME.cardHighlightBg,
+      cornerRadius: '12px',
       borderWidth: '1px',
-      borderColor: THEME.cardBorder,
+      borderColor: THEME.cardHighlightBorder,
       contents: [
         {
           type: 'text',
           text: '💡 重要決策與共識定案',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
-          color: THEME.titleText,
+          color: THEME.accentGoldText,
         },
         ...decisionRows,
       ],
@@ -2410,15 +2423,15 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
         {
           type: 'text',
           text: '✓',
-          size: 'sm',
-          color: THEME.accentGold,
+          size: 'md',
+          color: THEME.accentEmerald,
           flex: 0,
           weight: 'bold',
         },
         {
           type: 'text',
           text: a,
-          size: 'xs',
+          size: 'sm',
           color: THEME.bodyText,
           flex: 1,
           wrap: true,
@@ -2430,18 +2443,18 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      paddingAll: '12px',
-      backgroundColor: THEME.cardBg,
-      cornerRadius: '10px',
+      paddingAll: '14px',
+      backgroundColor: THEME.cardEmeraldBg,
+      cornerRadius: '12px',
       borderWidth: '1px',
-      borderColor: THEME.cardBorder,
+      borderColor: THEME.cardEmeraldBorder,
       contents: [
         {
           type: 'text',
           text: '📌 待辦與工程交辦清單',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
-          color: THEME.titleText,
+          color: THEME.accentEmeraldText,
         },
         ...actionRows,
       ],
@@ -2459,15 +2472,15 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
         {
           type: 'text',
           text: '▸',
-          size: 'sm',
-          color: THEME.accentGold,
+          size: 'md',
+          color: THEME.accentBlue,
           flex: 0,
           weight: 'bold',
         },
         {
           type: 'text',
           text: k,
-          size: 'xs',
+          size: 'sm',
           color: THEME.bodyText,
           flex: 1,
           wrap: true,
@@ -2479,18 +2492,18 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      paddingAll: '12px',
-      backgroundColor: THEME.cardBg,
-      cornerRadius: '10px',
+      paddingAll: '14px',
+      backgroundColor: THEME.cardBlueBg,
+      cornerRadius: '12px',
       borderWidth: '1px',
-      borderColor: THEME.cardBorder,
+      borderColor: THEME.cardBlueBorder,
       contents: [
         {
           type: 'text',
           text: '💰 關鍵數據與報價備忘',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
-          color: THEME.titleText,
+          color: THEME.accentBlueText,
         },
         ...dataRows,
       ],
@@ -2503,26 +2516,26 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       type: 'box',
       layout: 'vertical',
       margin: 'md',
-      backgroundColor: THEME.cardBg,
-      cornerRadius: '10px',
+      backgroundColor: THEME.cardRoseBg,
+      cornerRadius: '12px',
       borderWidth: '1px',
-      borderColor: THEME.cardBorder,
-      paddingAll: '12px',
+      borderColor: THEME.cardRoseBorder,
+      paddingAll: '14px',
       contents: [
         {
           type: 'text',
           text: '⚠️ 工程介面與時程風險預警',
-          size: 'xs',
+          size: 'sm',
           weight: 'bold',
-          color: THEME.titleText,
+          color: THEME.accentRoseText,
         },
         {
           type: 'text',
           text: report.risksAndWatch,
-          size: 'xs',
+          size: 'sm',
           color: THEME.bodyText,
           wrap: true,
-          margin: 'sm',
+          margin: 'xs',
         },
       ],
     });
@@ -2535,10 +2548,10 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       layout: 'vertical',
       margin: 'md',
       backgroundColor: THEME.cardHighlightBg,
-      cornerRadius: '10px',
+      cornerRadius: '12px',
       borderWidth: '1px',
       borderColor: THEME.cardHighlightBorder,
-      paddingAll: '12px',
+      paddingAll: '14px',
       contents: [
         {
           type: 'text',
@@ -2561,7 +2574,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -2688,7 +2701,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
 function createWelcomeFlex() {
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -2854,22 +2867,20 @@ function createWelcomeFlex() {
 }
 
 /**
- * 建立 ⚙️ 推播與定時通知設定 Flex 卡片 (曜石黑 + 香檳金質感)
+ * 建立 ⚙️ 推播與定時通知設定 Flex 卡片 (曜石黑 + 香檳金 · 手機美學優化)
  */
 function createSettingsFlex(settings = { newsEnabled: false, summaryEnabled: true }) {
   const newsStatusText = settings.newsEnabled ? '🟢 每日 08:00 準時推播' : '⚪ 已關閉推播';
   const newsBtnText = settings.newsEnabled ? '關閉新聞' : '開啟新聞';
-  const newsBtnColor = settings.newsEnabled ? THEME.btnSecondaryBg : THEME.btnGoldBg;
   const newsBtnStyle = settings.newsEnabled ? 'secondary' : 'primary';
 
   const summaryStatusText = settings.summaryEnabled ? '🟢 每日 21:00 準時推播' : '⚪ 已關閉推播';
   const summaryBtnText = settings.summaryEnabled ? '關閉摘要' : '開啟摘要';
-  const summaryBtnColor = settings.summaryEnabled ? THEME.btnSecondaryBg : THEME.btnGoldBg;
   const summaryBtnStyle = settings.summaryEnabled ? 'secondary' : 'primary';
 
   const bubble = {
     type: 'bubble',
-    size: 'giga',
+    size: 'mega',
     header: {
       type: 'box',
       layout: 'vertical',
@@ -2892,7 +2903,7 @@ function createSettingsFlex(settings = { newsEnabled: false, summaryEnabled: tru
               contents: [
                 {
                   type: 'text',
-                  text: '⚙️ NOTIFICATION PREFERENCES',
+                  text: '⚙️ NOTIFICATION SETTINGS',
                   size: 'xxs',
                   weight: 'bold',
                   color: THEME.badgeText,
@@ -2901,7 +2912,7 @@ function createSettingsFlex(settings = { newsEnabled: false, summaryEnabled: tru
             },
             {
               type: 'text',
-              text: '推播設定',
+              text: '推播偏好設定',
               size: 'xxs',
               color: THEME.badgeSub,
               align: 'end',
