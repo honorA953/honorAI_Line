@@ -116,6 +116,23 @@ async function clearMessages(conversationId) {
   await redis.del(KEY_PREFIX + conversationId);
 }
 
+const LOCK_PREFIX = 'linechat:lock:';
+
+// 確保同一個排程任務（如晚間總結、晨間新聞）在同一天不論被幾個來源觸發，都只真正執行一次
+// 回傳 true 代表本次呼叫成功取得鎖（應執行任務），false 代表今日已執行過（應跳過）
+async function acquireDailyLock(jobName, timeZone = 'Asia/Taipei') {
+  try {
+    const { dateStr } = getDayTimestampRange(new Date(), timeZone);
+    const key = `${LOCK_PREFIX}${jobName}:${dateStr}`;
+    const result = await redis.set(key, new Date().toISOString(), { nx: true, ex: 25 * 60 * 60 });
+    return result === 'OK' || result === true;
+  } catch (err) {
+    console.error('[db] acquireDailyLock error:', err.message);
+    // Redis 異常時放行，避免鎖機制故障導致任務完全無法執行
+    return true;
+  }
+}
+
 // 每次產生摘要時留一份完整記錄（含原始訊息），供同步程式備份到外部資料庫後再清除
 async function appendHistory(record) {
   await redis.rpush(HISTORY_KEY, JSON.stringify(record));
@@ -325,6 +342,7 @@ module.exports = {
   pruneOldMessages,
   getAllConversationIds,
   clearMessages,
+  acquireDailyLock,
   appendHistory,
   getSeenNewsUrls,
   recordSeenNews,

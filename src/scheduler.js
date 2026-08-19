@@ -18,6 +18,12 @@ function extractTargetId(conversationId) {
  * 執行每日晚間對話總結與歸檔（僅推播給有開啟摘要訂閱的對話）
  */
 async function runSummaryJob() {
+  const acquired = await db.acquireDailyLock('summary');
+  if (!acquired) {
+    console.log('[summary-job] Already sent today, skipping duplicate trigger.');
+    return;
+  }
+
   console.log('[summary-job] Starting daily conversation summary push...');
   const conversationIds = await db.getSummarySubscriberIds();
   console.log(`[summary-job] Found ${conversationIds.length} subscribed conversation(s) for summary.`);
@@ -67,6 +73,12 @@ async function runSummaryJob() {
  * 執行每日晨間建築與營造產業新聞推播（僅推播給有開啟新聞訂閱的對話）
  */
 async function runNewsJob() {
+  const acquired = await db.acquireDailyLock('news');
+  if (!acquired) {
+    console.log('[news-job] Already sent today, skipping duplicate trigger.');
+    return { success: true, count: 0, skipped: true };
+  }
+
   console.log('[news-job] Starting daily construction news push...');
   try {
     const digest = await getDailyConstructionDigest();
