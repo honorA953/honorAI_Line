@@ -46,6 +46,7 @@ const {
 } = require('./assistant');
 
 const SUMMARY_KEYWORD = process.env.SUMMARY_KEYWORD || '摘要';
+const HISTORY_KEYWORDS = ['歷史紀錄', '歷史記錄', '查歷史', '總結歷史', '摘要歷史'];
 const NEWS_KEYWORDS = [
   '建築新聞',
   '今日新聞',
@@ -277,6 +278,11 @@ async function handleEvent(event, conversationId) {
     // 7. 對話即時摘要 (純對話)
     if (rawText === SUMMARY_KEYWORD || rawText === '摘要' || rawText === '對話摘要') {
       return replyImmediateSummary(event.replyToken, conversationId);
+    }
+
+    // 7b. 查詢過往已產生的總結歷史紀錄
+    if (HISTORY_KEYWORDS.includes(rawText)) {
+      return replyImmediateHistory(event.replyToken, conversationId);
     }
 
     // 8. 新聞「換一批」次次更新
@@ -650,6 +656,44 @@ async function replyImmediateSummary(replyToken, conversationId) {
     generatedAt: new Date().toISOString(),
   });
   console.log(`[summary] replied on-demand (retained ${messages.length} messages) for ${conversationId}`);
+}
+
+async function replyImmediateHistory(replyToken, conversationId) {
+  const records = await db.getHistory(conversationId, 5);
+  if (!records.length) {
+    await client.replyMessage({
+      replyToken,
+      messages: [
+        {
+          type: 'text',
+          text: '目前還查不到已存檔的總結歷史紀錄（可能尚未產生過，或已被同步搬移至長期資料庫）。',
+          quickReply: getQuickReply(),
+        },
+      ],
+    });
+    return;
+  }
+
+  const lines = records
+    .slice()
+    .reverse()
+    .map((r, i) => {
+      const date = new Date(r.generatedAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+      const tag = r.type === 'on_demand' ? '（即時查詢）' : '（每日排程）';
+      return `${i + 1}. ${date} ${tag}\n${r.summary}`;
+    });
+
+  await client.replyMessage({
+    replyToken,
+    messages: [
+      {
+        type: 'text',
+        text: `🗂️ 最近 ${records.length} 筆總結歷史紀錄：\n\n${lines.join('\n\n')}`,
+        quickReply: getQuickReply(),
+      },
+    ],
+  });
+  console.log(`[history] replied ${records.length} record(s) for ${conversationId}`);
 }
 
 async function replyImmediateNews(replyToken, options = { topic: 'all' }) {

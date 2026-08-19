@@ -138,6 +138,20 @@ async function appendHistory(record) {
   await redis.rpush(HISTORY_KEY, JSON.stringify(record));
 }
 
+// 讀取指定對話最近的歷史總結紀錄（未被 sync-to-mysql.js 搬走前，仍留在 Redis 裡）
+async function getHistory(conversationId, limit = 5) {
+  try {
+    const raw = (await redis.lrange(HISTORY_KEY, -200, -1).catch(() => [])) || [];
+    const records = raw
+      .map((item) => (typeof item === 'string' ? JSON.parse(item) : item))
+      .filter((r) => r && r.conversationId === conversationId);
+    return records.slice(-limit);
+  } catch (err) {
+    console.error('[db] getHistory error:', err.message);
+    return [];
+  }
+}
+
 const SEEN_NEWS_KEY = 'linechat:seen_news';
 const inMemorySeen = new Set();
 
@@ -344,6 +358,7 @@ module.exports = {
   clearMessages,
   acquireDailyLock,
   appendHistory,
+  getHistory,
   getSeenNewsUrls,
   recordSeenNews,
   clearSeenNews,

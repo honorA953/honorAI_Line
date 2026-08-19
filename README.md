@@ -89,6 +89,30 @@ curl -X POST http://localhost:3000/tasks/summary
    - *優勢：直接發起 HTTP 請求，精準在設定秒數叫醒睡眠中的 Render instance 並即時推播，徹底解決 GitHub Actions 排隊延遲 2~3 小時的問題。*
 5. 若使用 GitHub Actions：在 GitHub repo 的 **Settings → Secrets and variables → Actions** 新增 secret `SUMMARY_TRIGGER_SECRET`，workflow 也會作為備援定時觸發。
 
+## 查詢歷史總結紀錄
+
+每次產生摘要（不論排程或即時查詢）都會存一份完整紀錄到 Redis（`linechat:history`）。想查看該對話最近產生過的摘要，傳送 **「歷史紀錄」**（或「查歷史」、「總結歷史」、「摘要歷史」）即可回覆最近 5 筆。
+
+若紀錄已被 `npm run sync` 同步搬到NAS MySQL（見下方），Redis 裡會被移除，屆時「歷史紀錄」關鍵字只會顯示尚未同步走的較新紀錄；更早的要直接查 MySQL 的 `conversation_summaries` 表。
+
+## 長期歸檔到NAS MySQL（選用）
+
+`scripts/sync-to-mysql.js` 會把 Redis 裡累積的 `linechat:history` 寫入NAS上的MySQL（`conversation_summaries` 表），成功寫入後才從Redis移除。因為NAS的MySQL通常只開放內網，**這支腳本必須在能連到NAS的機器上執行**（例如NAS本機、或同一區網內的伺服器），不能放進Render或GitHub Actions（兩者都是雲端、連不到內網IP）。
+
+它預設**不會自動執行**，需要自行排程，例如在Synology NAS上：
+
+1. `.env` 填好 `MYSQL_HOST` / `MYSQL_PORT` / `MYSQL_USER` / `MYSQL_PASSWORD` / `MYSQL_DATABASE`（見 `.env.example`）以及 `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`
+2. 把整個repo（或至少 `scripts/sync-to-mysql.js`、`package.json`、`node_modules`、`.env`）放到NAS上
+3. DSM → **控制台 → 工作排程器 → 新增 → 已排程的工作 → 使用者定義的指令碼**
+   - 排程頻率：例如每小時或每天固定時間
+   - 使用者：有權限存取MySQL的帳號
+   - 執行指令：
+     ```bash
+     cd /volume1/path/to/LineChat && /usr/local/bin/node scripts/sync-to-mysql.js >> logs/sync.log 2>&1
+     ```
+     （Node路徑用 `which node` 或DSM套件安裝路徑確認；`logs/` 資料夾需自行建立）
+4. 也可先手動跑一次確認連線正常：`npm run sync`
+
 ## 環境變數說明
 
 見 `.env.example`，重點有：
