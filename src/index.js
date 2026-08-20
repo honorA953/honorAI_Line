@@ -238,7 +238,7 @@ async function handleEvent(event, conversationId) {
         messages: [
           {
             type: 'text',
-            text: '🧹 已為您清空所有待辦記事本清單！隨時傳送「記下：...」即可新增。',
+            text: '🧹 已為您清空所有待辦記事本清單！隨時傳送「記下：明日會勘」即可新增。',
             quickReply: getQuickReply(),
           },
         ],

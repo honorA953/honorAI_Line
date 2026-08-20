@@ -37,10 +37,11 @@ async function describeImage(imageBuffer) {
           role: 'system',
           content:
             '你是一位高級智能商業與技術分析顧問。請深入分析用戶傳送的圖片，輸出繁體中文 JSON 物件：\n' +
+            '【要求】所有欄位皆須為完整通順之專業語句，嚴禁在任何欄位中使用省略號「...」或截斷文字。\n\n' +
             '{\n' +
-            '  "description": "精準客觀描述圖片主題與核心畫面 (60字內)",\n' +
+            '  "description": "精準客觀描述圖片主題與核心畫面",\n' +
             '  "ocr": "若圖中有重要文字、表格數據、金額、代碼或資訊請提取整理，無則填寫「無重要文字」",\n' +
-            '  "supplement": "根據圖片內容進行深度分析、背景知識補充、趨勢解讀或專業建議 (80字內)"\n' +
+            '  "supplement": "根據圖片內容進行深度分析、背景知識補充、趨勢解讀或專業建議"\n' +
             '}\n' +
             '請只輸出純 JSON 格式字串，不要加 markdown 標記。',
         },
@@ -161,16 +162,17 @@ async function summarizeYoutube(url, videoId) {
           role: 'system',
           content:
             '你是一位高階智庫與內容精研分析師。請分析這部 YouTube 影片，並輸出繁體中文 JSON：\n' +
+            '【要求】所有要點皆須為完整通順語句，嚴禁使用省略號「...」或截斷句子。\n\n' +
             '{\n' +
-            '  "title": "影片標題 (簡潔化)",\n' +
+            '  "title": "完整清晰的影片標題",\n' +
             '  "points": ["核心重點1", "核心重點2", "核心重點3"],\n' +
-            '  "supplement": "主動補充背景知識、產業脈絡、專有名詞科普、核心洞察或相關延伸資訊 (100字以內)"\n' +
+            '  "supplement": "主動補充背景知識、產業脈絡、專有名詞科普、核心洞察或相關延伸資訊"\n' +
             '}\n' +
             '請只輸出純 JSON 格式字串，不要加 markdown 標記。',
         },
         { role: 'user', content: promptInput },
       ],
-      max_tokens: 350,
+      max_tokens: 600,
     });
 
     const raw = completion.choices[0]?.message?.content?.trim() || '';
@@ -257,16 +259,17 @@ async function summarizeWebpage(url) {
           role: 'system',
           content:
             '你是一位專業情報與內容分析師。請分析此網頁內容，並輸出繁體中文 JSON：\n' +
+            '【要求】所有欄位皆須為完整且語意通順之繁體中文，嚴禁在任何欄位中使用省略號「...」或截斷文字。\n\n' +
             '{\n' +
-            '  "title": "網頁標題",\n' +
-            '  "summary": "提煉該頁面的核心精華 (80字以內)",\n' +
-            '  "supplement": "主動補充該主題的背景來歷、產業趨勢、技術概念或延伸重要資訊 (80字以內)"\n' +
+            '  "title": "完整網頁標題",\n' +
+            '  "summary": "提煉該頁面的核心完整精華",\n' +
+            '  "supplement": "主動補充該主題的背景來歷、產業趨勢、技術概念或延伸重要資訊"\n' +
             '}\n' +
             '請只輸出純 JSON 格式字串，不要加 markdown 標記。',
         },
         { role: 'user', content: contentForAi },
       ],
-      max_tokens: 300,
+      max_tokens: 500,
     });
 
     const raw = completion.choices[0]?.message?.content?.trim() || '';

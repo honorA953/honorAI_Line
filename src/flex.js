@@ -200,12 +200,12 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -224,17 +224,14 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
                 {
                   type: 'text',
                   text: '🎬 YOUTUBE INSIGHT',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: '影音智慧解析',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -244,10 +241,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
           type: 'text',
           text: title || 'YouTube 影片',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          wrap: true,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, wrap: true, margin: 'md',
         },
       ],
     },
@@ -255,7 +249,7 @@ function createVideoFlex({ title, points = [], supplement = '', url = '' }) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: bodyContents,
     },
   };
@@ -355,12 +349,12 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -379,17 +373,14 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
                 {
                   type: 'text',
                   text: '🌐 WEB ARTICLE',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: '網頁智能導讀',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -399,10 +390,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
           type: 'text',
           text: title || '網頁連結',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          wrap: true,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, wrap: true, margin: 'md',
         },
       ],
     },
@@ -410,7 +398,7 @@ function createWebFlex({ title, summary = '', supplement = '', url = '' }) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: bodyContents,
     },
   };
@@ -542,12 +530,12 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -566,17 +554,14 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
                 {
                   type: 'text',
                   text: '👁️ VISION & OCR',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: '影像智慧辨識',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -586,9 +571,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
           type: 'text',
           text: '圖片內容與數據洞察',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, margin: 'md',
         },
       ],
     },
@@ -596,7 +579,7 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: bodyContents,
     },
   };
@@ -615,12 +598,12 @@ function createImageFlex({ description = '', ocr = '', supplement = '' }) {
 function createAudioFlex({ transcript = '' }) {
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -639,17 +622,14 @@ function createAudioFlex({ transcript = '' }) {
                 {
                   type: 'text',
                   text: '🎙️ AUDIO TRANSCRIPT',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: 'Whisper AI 辨識',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -659,9 +639,7 @@ function createAudioFlex({ transcript = '' }) {
           type: 'text',
           text: '語音訊息逐字稿',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, margin: 'md',
         },
       ],
     },
@@ -669,7 +647,7 @@ function createAudioFlex({ transcript = '' }) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -703,7 +681,7 @@ function createAudioFlex({ transcript = '' }) {
 
   return {
     type: 'flex',
-    altText: `🎙️ 語音辨識：${transcript.slice(0, 30)}`,
+    altText: `🎙️ 語音辨識：${transcript.length > 50 ? transcript.slice(0, 48) : transcript}`,
     contents: bubble,
     quickReply: getQuickReply(),
   };
@@ -843,9 +821,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
                 {
                   type: 'text',
                   text: sec.def.badge || 'REPORT',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
@@ -867,12 +843,12 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -891,17 +867,14 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
                 {
                   type: 'text',
                   text: '📋 EXECUTIVE SUMMARY',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: new Date().toLocaleDateString('zh-TW'),
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -911,9 +884,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
           type: 'text',
           text: title,
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, margin: 'md',
         },
       ],
     },
@@ -921,7 +892,7 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents:
         sectionCards.length > 0
           ? sectionCards
@@ -1036,9 +1007,7 @@ function createConstructionNewsFlex(digest) {
               {
                 type: 'text',
                 text: item.category || '🏗️ 產業即時',
-                size: 'xxs',
-                weight: 'bold',
-                color: THEME.badgeText,
+                size: 'xs', weight: 'bold', color: THEME.badgeText,
               },
             ],
           },
@@ -1146,12 +1115,12 @@ function createConstructionNewsFlex(digest) {
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -1170,17 +1139,14 @@ function createConstructionNewsFlex(digest) {
                 {
                   type: 'text',
                   text: '🏗️ ARCHITECTURE BRIEF',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: dateStr,
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -1190,9 +1156,7 @@ function createConstructionNewsFlex(digest) {
           type: 'text',
           text: `今日建築情報 · ${categoryTitle}`,
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, margin: 'md',
         },
       ],
     },
@@ -1200,7 +1164,7 @@ function createConstructionNewsFlex(digest) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: bodyContents,
     },
     footer: {
@@ -1251,12 +1215,12 @@ function createConstructionNewsFlex(digest) {
 function createMenuFlex() {
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -1275,17 +1239,14 @@ function createMenuFlex() {
                 {
                   type: 'text',
                   text: '⚡ QUICK MENU',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: '快捷功能選單',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -1295,9 +1256,7 @@ function createMenuFlex() {
           type: 'text',
           text: '🏛️ AI 建築特助 · 核心控制台',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, margin: 'md',
         },
         {
           type: 'text',
@@ -1313,7 +1272,7 @@ function createMenuFlex() {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       spacing: 'md',
       contents: [
         // 區塊 1: 待辦與工程記事
@@ -1449,7 +1408,7 @@ function createMenuFlex() {
       contents: [
         {
           type: 'text',
-          text: '💡 隨時傳送「記下：...」或「@AI 題目」即可諮詢 AI',
+          text: '💡 隨時傳送「記下：明日會勘」或「@AI 諮詢題目」即可互動',
           size: 'xxs',
           color: THEME.mutedText,
           align: 'center',
@@ -1518,12 +1477,12 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -1542,17 +1501,14 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
                 {
                   type: 'text',
                   text: analysis.category || '💡 IN-DEPTH ANALYSIS',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: '智庫首席剖析',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -1562,10 +1518,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
           type: 'text',
           text: title || '新聞深度剖析',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          wrap: true,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, wrap: true, margin: 'md',
         },
       ],
     },
@@ -1573,7 +1526,7 @@ function createNewsAnalysisFlex({ title = '', data = null, analysisText = '' }) 
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents:
         bodyContents.length > 0
           ? bodyContents
@@ -1787,12 +1740,12 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -1811,17 +1764,14 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
                 {
                   type: 'text',
                   text: result.category || '🤖 AI ARCH-CONSULTANT',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: '智庫特助解答',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -1829,12 +1779,9 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
         },
         {
           type: 'text',
-          text: question.length > 35 ? question.slice(0, 35) + '...' : question,
+          text: question,
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          wrap: true,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, wrap: true, margin: 'md',
         },
       ],
     },
@@ -1842,7 +1789,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents:
         bodyContents.length > 0
           ? bodyContents
@@ -1892,7 +1839,7 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
 
   return {
     type: 'flex',
-    altText: `🤖 AI 特助解答：${question.slice(0, 20)}`,
+    altText: `🤖 AI 特助解答：${question.length > 50 ? question.slice(0, 48) : question}`,
     contents: bubble,
     quickReply: getQuickReply(),
   };
@@ -1921,9 +1868,7 @@ function createNotesFlex(notes = []) {
               {
                 type: 'text',
                 text: `${idx + 1}. ${note.category || '📋 待辦'}`,
-                size: 'xxs',
-                weight: 'bold',
-                color: THEME.badgeText,
+                size: 'xs', weight: 'bold', color: THEME.badgeText,
               },
             ],
           },
@@ -1979,7 +1924,7 @@ function createNotesFlex(notes = []) {
           {
             type: 'box',
             layout: 'vertical',
-            paddingAll: '16px',
+            paddingAll: '18px',
             backgroundColor: THEME.cardBg,
             cornerRadius: '12px',
             borderWidth: '1px',
@@ -2008,12 +1953,12 @@ function createNotesFlex(notes = []) {
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -2032,17 +1977,14 @@ function createNotesFlex(notes = []) {
                 {
                   type: 'text',
                   text: '📝 SMART MEMO HUB',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: `${notes.length} 項紀錄`,
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -2052,9 +1994,7 @@ function createNotesFlex(notes = []) {
           type: 'text',
           text: '📌 專屬智能記事本與待辦清單',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, margin: 'md',
         },
       ],
     },
@@ -2062,7 +2002,7 @@ function createNotesFlex(notes = []) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: bodyContents,
     },
     footer: {
@@ -2155,9 +2095,9 @@ function createNoteHelperFlex() {
     type: 'box',
     layout: 'vertical',
     margin: idx === 0 ? 'none' : 'md',
-    paddingAll: '10px',
+    paddingAll: '12px',
     backgroundColor: THEME.cardBg,
-    cornerRadius: '10px',
+    cornerRadius: '12px',
     borderWidth: '1px',
     borderColor: THEME.cardBorder,
     contents: [
@@ -2170,17 +2110,15 @@ function createNoteHelperFlex() {
             layout: 'horizontal',
             backgroundColor: THEME.badgeBg,
             cornerRadius: 'md',
-            paddingStart: '6px',
-            paddingEnd: '6px',
-            paddingTop: '2px',
-            paddingBottom: '2px',
+            paddingStart: '8px',
+            paddingEnd: '8px',
+            paddingTop: '3px',
+            paddingBottom: '3px',
             contents: [
               {
                 type: 'text',
                 text: tpl.badge,
-                size: 'xxs',
-                weight: 'bold',
-                color: THEME.badgeText,
+                size: 'xs', weight: 'bold', color: THEME.badgeText,
               },
             ],
           },
@@ -2196,13 +2134,33 @@ function createNoteHelperFlex() {
         ],
       },
       {
+        type: 'box',
+        layout: 'vertical',
+        margin: 'sm',
+        paddingAll: '8px',
+        backgroundColor: '#FFFFFF',
+        cornerRadius: '8px',
+        borderWidth: '1px',
+        borderColor: THEME.cardBorder,
+        contents: [
+          {
+            type: 'text',
+            text: tpl.example,
+            size: 'xs',
+            color: THEME.bodyText,
+            wrap: true,
+          },
+        ],
+      },
+      {
         type: 'button',
         action: {
           type: 'message',
-          label: `👉 點擊發送：${tpl.example.slice(0, 16)}...`,
+          label: '✍️ 一鍵填入此範本',
           text: tpl.example,
         },
-        style: 'secondary',
+        style: 'primary',
+        color: THEME.btnPrimaryBg,
         height: 'sm',
         margin: 'sm',
       },
@@ -2211,12 +2169,12 @@ function createNoteHelperFlex() {
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -2235,17 +2193,14 @@ function createNoteHelperFlex() {
                 {
                   type: 'text',
                   text: '⚡ QUICK NOTE ASSISTANT',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: '一鍵快速記事',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -2255,9 +2210,7 @@ function createNoteHelperFlex() {
           type: 'text',
           text: '📝 智能記事快捷選單 & 範本引導',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, margin: 'md',
         },
         {
           type: 'text',
@@ -2574,12 +2527,12 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -2598,17 +2551,14 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
                 {
                   type: 'text',
                   text: '📊 EXECUTIVE ALL-IN-ONE',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: new Date().toLocaleDateString('zh-TW'),
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -2618,9 +2568,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           type: 'text',
           text: '全方位對話、記事與工程智能統整',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, margin: 'md',
         },
       ],
     },
@@ -2628,7 +2576,7 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents:
         bodyContents.length > 0
           ? bodyContents
@@ -2701,12 +2649,12 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
 function createWelcomeFlex() {
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -2725,17 +2673,14 @@ function createWelcomeFlex() {
                 {
                   type: 'text',
                   text: '🏛️ AI 建築智庫特助',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: '全功能上線',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -2745,10 +2690,7 @@ function createWelcomeFlex() {
           type: 'text',
           text: '您好！我是您的專屬建築智庫「大大」',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          wrap: true,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, wrap: true, margin: 'md',
         },
       ],
     },
@@ -2756,7 +2698,7 @@ function createWelcomeFlex() {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -2880,12 +2822,12 @@ function createSettingsFlex(settings = { newsEnabled: false, summaryEnabled: tru
 
   const bubble = {
     type: 'bubble',
-    size: 'mega',
+    size: 'giga',
     header: {
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.headerBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       contents: [
         {
           type: 'box',
@@ -2904,17 +2846,14 @@ function createSettingsFlex(settings = { newsEnabled: false, summaryEnabled: tru
                 {
                   type: 'text',
                   text: '⚙️ NOTIFICATION SETTINGS',
-                  size: 'xxs',
-                  weight: 'bold',
-                  color: THEME.badgeText,
+                  size: 'xs', weight: 'bold', color: THEME.badgeText,
                 },
               ],
             },
             {
               type: 'text',
               text: '推播偏好設定',
-              size: 'xxs',
-              color: THEME.badgeSub,
+              size: 'xs', color: THEME.badgeSub,
               align: 'end',
               gravity: 'center',
             },
@@ -2924,9 +2863,7 @@ function createSettingsFlex(settings = { newsEnabled: false, summaryEnabled: tru
           type: 'text',
           text: '🏛️ 定時推播與通知管理',
           weight: 'bold',
-          size: 'md',
-          color: THEME.headerTitle,
-          margin: 'md',
+          size: 'lg', color: THEME.headerTitle, margin: 'md',
         },
         {
           type: 'text',
@@ -2942,7 +2879,7 @@ function createSettingsFlex(settings = { newsEnabled: false, summaryEnabled: tru
       type: 'box',
       layout: 'vertical',
       backgroundColor: THEME.bodyBg,
-      paddingAll: '16px',
+      paddingAll: '18px',
       spacing: 'md',
       contents: [
         // 模組 1: 晨間新聞

@@ -235,16 +235,17 @@ async function summarizeConstructionNews(rawItems, { topic = 'all', seenList = [
             '你是一位高級建築、營建工程與都市規劃領域的資深產業分析顧問。\n' +
             '請從提供的最新新聞候選清單中，嚴格篩選出 3~4 則最精彩、最具備「專業價值、產業重大影響力、技術前瞻或重大政策」的新聞（排除八卦、廣告與低價值內容）。\n' +
             '請務必根據候選編號 `candidateId` 回傳，以保證連結正確無誤。\n\n' +
+            '【撰寫原則】所有欄位皆須為完整、流暢且專業的繁體中文語句，嚴禁在標題、摘要或解讀中使用省略號「...」或截斷文字！\n\n' +
             '請輸出符合下列繁體中文 JSON 格式：\n' +
             '{\n' +
-            '  "overview": "今日建築與營造產業核心脈動概述 (50字以內)",\n' +
+            '  "overview": "今日建築與營造產業核心脈動概述",\n' +
             '  "items": [\n' +
             '    {\n' +
             '      "candidateId": 1,\n' +
             '      "category": "分類標籤 (例如: 🏛️ 前瞻設計 / 🌿 綠建ESG / 📜 政策法規 / 🏗️ 重大工程 / 🏢 智慧科技 / 🌍 國際動態)",\n' +
-            '      "title": "精煉新聞標題 (25字以內)",\n' +
-            '      "summary": "核心重點與事件精華 (60字以內)",\n' +
-            '      "insight": "專家產業影響解讀或延伸觀點 (45字以內)"\n' +
+            '      "title": "精煉新聞完整標題",\n' +
+            '      "summary": "核心重點與事件完整精華",\n' +
+            '      "insight": "專家產業影響解讀或延伸觀點"\n' +
             '    }\n' +
             '  ]\n' +
             '}',
@@ -269,7 +270,7 @@ async function summarizeConstructionNews(rawItems, { topic = 'all', seenList = [
         finalItems.push({
           category: aiItem.category || '🏗️ 產業焦點',
           title: aiItem.title || original.title,
-          summary: aiItem.summary || original.description.slice(0, 80),
+          summary: aiItem.summary || original.description || original.title,
           insight: aiItem.insight || '密切關注後續市場與工程動態發展。',
           source: original.source || '即時情報',
           url: original.link,
@@ -284,8 +285,8 @@ async function summarizeConstructionNews(rawItems, { topic = 'all', seenList = [
         if (!finalItems.some((f) => f.url === cand.link)) {
           finalItems.push({
             category: '🏗️ 產業即時',
-            title: cand.title.slice(0, 30),
-            summary: cand.description.slice(0, 70) || cand.title,
+            title: cand.title,
+            summary: cand.description || cand.title,
             insight: '持續追蹤後續進度與產業影響。',
             source: cand.source,
             url: cand.link,
@@ -314,8 +315,8 @@ async function summarizeConstructionNews(rawItems, { topic = 'all', seenList = [
     console.error('[news] summarize error:', err.message);
     const fallbackItems = candidatePool.slice(0, 3).map((item) => ({
       category: '🏗️ 產業即時',
-      title: item.title.slice(0, 30),
-      summary: item.description.slice(0, 60) || item.title,
+      title: item.title,
+      summary: item.description || item.title,
       insight: '密切關注後續市場與工程動態發展。',
       source: item.source,
       url: item.link,
