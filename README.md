@@ -11,7 +11,7 @@ LINE官方帳號(Messaging API) Bot：記錄收到的對話內容，用OpenAI整
    - **語音訊息**：透過 OpenAI Whisper 語音轉文字
    - 所有訊息與摘要自動存入 Upstash Redis（依 1對1 / 群組 / 聊天室分開存放）
 2. 使用者傳送關鍵字（預設「摘要」）時，立即整理目前累積的對話並回覆
-3. 每天固定時間（預設21:00），由GitHub Actions排程呼叫 `POST /tasks/summary` 觸發整理，針對每個有新訊息的對話呼叫OpenAI摘要，用 `pushMessage` 推播回去，並清空已摘要的訊息
+3. 每天固定時間（預設19:00），由GitHub Actions排程呼叫 `POST /tasks/summary` 觸發整理，針對每個有新訊息的對話呼叫OpenAI摘要，用 `pushMessage` 推播回去，並清空已摘要的訊息
 
 線上部署在Render（免費方案），因為免費instance閒置會睡著、且沒有persistent disk，所以：
 - 訊息儲存改用 Upstash Redis（獨立於instance之外，重啟不會遺失）
@@ -62,8 +62,7 @@ curl -X POST http://localhost:3000/tasks/summary
 
 所有群組或個人使用者皆可自主控制定時推播，無需所有人被動接收：
 - 傳送 **「推播設定」** 或點擊快捷列上的 **「⚙️ 推播設定」**，即可查看與操作目前的推播狀態卡片。
-- **晨間新聞 (08:00)**：傳送 **「開啟新聞」** 或 **「關閉新聞」**。
-- **晚間總結 (21:00)**：傳送 **「開啟摘要」** 或 **「關閉摘要」**。
+- **晚間總結 (19:00)**：傳送 **「開啟摘要」** 或 **「關閉摘要」**。
 - 在群組中設定將套用於該群組；在私聊中設定僅套用於個人。
 
 ## 正式部署與定時精準觸發（Render + cron-job.org / GitHub Actions）
@@ -77,12 +76,8 @@ curl -X POST http://localhost:3000/tasks/summary
 3. 部署完成後拿到固定網址，回LINE Developers Console把Webhook URL改成 `https://你的服務.onrender.com/webhook`
 4. **精準秒級定時推播（推薦 cron-job.org，100% 免費且零延遲）**：
    - 免費註冊 [cron-job.org](https://cron-job.org)
-   - 建立 2 個排程（時區選 Asia/Taipei）：
-     1. **每日 08:00 晨間新聞**：
-        - URL: `https://你的服務.onrender.com/tasks/news`
-        - Method: `POST`
-        - Header: `x-trigger-secret: 你的密鑰`
-     2. **每日 21:00 晚間總結**：
+   - 建立 1 個排程（時區選 Asia/Taipei）：
+     1. **每日 19:00 晚間總結**：
         - URL: `https://你的服務.onrender.com/tasks/summary`
         - Method: `POST`
         - Header: `x-trigger-secret: 你的密鑰`
@@ -117,16 +112,13 @@ curl -X POST http://localhost:3000/tasks/summary
 
 見 `.env.example`，重點有：
 
-- `DEFAULT_NEWS_ENABLED`：新對話預設是否推播晨間新聞（預設 `false`，由使用者自行開啟）
 - `DEFAULT_SUMMARY_ENABLED`：新對話預設是否推播晚間總結（預設 `true`）
-- `SUMMARY_CRON`：伺服器內建node-cron的排程表達式（預設 `0 21 * * *`）
-- `CONSTRUCTION_NEWS_CRON`：伺服器內建新聞推播 cron（預設 `0 8 * * *`）
+- `SUMMARY_CRON`：伺服器內建node-cron的排程表達式（預設 `0 19 * * *`）
 - `MAX_MESSAGES_PER_SUMMARY`：單次摘要最多帶入的訊息則數，超過會自動分段摘要後再合併
 - `SUMMARY_KEYWORD`：使用者傳送這個關鍵字（預設「摘要」）會立即回覆目前累積的摘要
-- `SUMMARY_TRIGGER_SECRET`：保護 `/tasks/news` 與 `/tasks/summary` 端點的密鑰，正式環境務必設定
+- `SUMMARY_TRIGGER_SECRET`：保護 `/tasks/summary` 端點的密鑰，正式環境務必設定
 
 ## 注意事項
 
 - 群組/多人聊天室要能取得成員暱稱，需LINE官方帳號有權限讀取該成員資料（對方需為官方帳號好友或群組設定允許），否則會顯示「未知使用者」
 - Render免費方案會有冷啟動延遲（instance睡著時第一個請求會慢幾秒到十幾秒）
-

@@ -2,8 +2,8 @@ name: Trigger daily LINE summary
 
 on:
   schedule:
-    # 13:00 UTC = 21:00 Asia/Taipei
-    - cron: '0 13 * * *'
+    # 11:00 UTC = 19:00 Asia/Taipei
+    - cron: '0 11 * * *'
   workflow_dispatch: {}
 
 jobs:

@@ -92,14 +92,6 @@ function getQuickReply() {
       type: 'action',
       action: {
         type: 'message',
-        label: '📰 今日新聞',
-        text: '今日新聞',
-      },
-    },
-    {
-      type: 'action',
-      action: {
-        type: 'message',
         label: '⚙️ 推播設定',
         text: '推播設定',
       },
@@ -917,18 +909,6 @@ function createExecutiveSummaryFlex({ title = '📋 對話深度總結報告', s
           type: 'button',
           action: {
             type: 'message',
-            label: '📰 今日新聞',
-            text: '今日新聞',
-          },
-          style: 'primary',
-          height: 'sm',
-          color: THEME.btnPrimaryBg,
-          flex: 1,
-        },
-        {
-          type: 'button',
-          action: {
-            type: 'message',
             label: '🎛️ 智能選單',
             text: '選單',
           },
@@ -1361,10 +1341,10 @@ function createMenuFlex() {
           margin: 'md',
           color: THEME.cardBorder,
         },
-        // 區塊 3: 建築情報與推播設定
+        // 區塊 3: 推播設定
         {
           type: 'text',
-          text: '📰 建築情報與推播',
+          text: '⚙️ 推播設定',
           size: 'xs',
           weight: 'bold',
           color: THEME.titleText,
@@ -1374,17 +1354,6 @@ function createMenuFlex() {
           layout: 'horizontal',
           spacing: 'sm',
           contents: [
-            {
-              type: 'button',
-              action: {
-                type: 'message',
-                label: '📰 今日新聞',
-                text: '今日新聞',
-              },
-              style: 'secondary',
-              height: 'sm',
-              flex: 1,
-            },
             {
               type: 'button',
               action: {
@@ -1810,18 +1779,6 @@ function createAssistantFlex({ question = '', data = null, answer = '' }) {
       backgroundColor: THEME.cardBg,
       paddingAll: '12px',
       contents: [
-        {
-          type: 'button',
-          action: {
-            type: 'message',
-            label: '📰 今日新聞',
-            text: '今日新聞',
-          },
-          style: 'primary',
-          height: 'sm',
-          color: THEME.btnPrimaryBg,
-          flex: 1,
-        },
         {
           type: 'button',
           action: {
@@ -2613,17 +2570,6 @@ function createSynthesisFlex({ data = null, rawText = '' }) {
           type: 'button',
           action: {
             type: 'message',
-            label: '📰 今日新聞',
-            text: '今日新聞',
-          },
-          style: 'secondary',
-          height: 'sm',
-          flex: 1,
-        },
-        {
-          type: 'button',
-          action: {
-            type: 'message',
             label: '🎛️ 選單',
             text: '選單',
           },
@@ -2745,7 +2691,7 @@ function createWelcomeFlex() {
             },
             {
               type: 'text',
-              text: '1. 📰 08:00 晨間建築情報自動推播\n2. 🗓️ 21:00 全天對話與待辦深度總結\n3. 📝 智能記事：「記下：明天上午9點會勘」\n4. 📋 查看待辦：輸入「看記事」\n5. 📊 跨維度統整：輸入「智能統整」\n6. 🔄 新聞換批：輸入「換新聞」',
+              text: '1. 🗓️ 19:00 全天對話與待辦深度總結\n2. 📝 智能記事：「記下：明天上午9點會勘」\n3. 📋 查看待辦：輸入「看記事」\n4. 📊 跨維度統整：輸入「智能統整」',
               size: 'xs',
               color: THEME.bodyText,
               wrap: true,
@@ -2778,17 +2724,6 @@ function createWelcomeFlex() {
           type: 'button',
           action: {
             type: 'message',
-            label: '📰 今日新聞',
-            text: '今日新聞',
-          },
-          style: 'secondary',
-          height: 'sm',
-          flex: 1,
-        },
-        {
-          type: 'button',
-          action: {
-            type: 'message',
             label: '➕ 快速記事',
             text: '新增記事',
           },
@@ -2812,6 +2747,36 @@ function createWelcomeFlex() {
  * 建立 ⚙️ 推播與定時通知設定 Flex 卡片 (曜石黑 + 香檳金 · 手機美學優化)
  */
 function createSettingsFlex(settings = { newsEnabled: false, summaryEnabled: true }) {
+  const summaryEnabled = settings.summaryEnabled !== false;
+  return {
+    type: 'flex',
+    altText: `⚙️ 推播通知設定（每日 19:00 對話摘要：${summaryEnabled ? '開啟' : '關閉'}）`,
+    contents: {
+      type: 'bubble',
+      header: {
+        type: 'box', layout: 'vertical', backgroundColor: THEME.headerBg, paddingAll: '18px',
+        contents: [
+          { type: 'text', text: '⚙️ 推播偏好設定', weight: 'bold', size: 'lg', color: THEME.headerTitle },
+          { type: 'text', text: '管理每日對話摘要通知', size: 'xs', color: THEME.badgeSub, margin: 'sm' },
+        ],
+      },
+      body: {
+        type: 'box', layout: 'vertical', backgroundColor: THEME.bodyBg, paddingAll: '18px',
+        contents: [
+          { type: 'text', text: '📋 每日對話摘要（19:00）', weight: 'bold', size: 'sm', color: THEME.titleText },
+          { type: 'text', text: `目前狀態：${summaryEnabled ? '🟢 每日 19:00 準時推播' : '⚪ 已關閉推播'}`, size: 'xs', color: summaryEnabled ? THEME.accentGold : THEME.subText, margin: 'sm' },
+          { type: 'text', text: '智能整理今日對話重點、待辦事項與重要數字。', size: 'xxs', color: THEME.mutedText, wrap: true, margin: 'sm' },
+          {
+            type: 'button', margin: 'md', height: 'sm', style: summaryEnabled ? 'secondary' : 'primary',
+            color: summaryEnabled ? undefined : THEME.btnGoldBg,
+            action: { type: 'message', label: summaryEnabled ? '🛑 關閉摘要推播' : '🔔 開啟摘要推播', text: summaryEnabled ? '關閉摘要' : '開啟摘要' },
+          },
+        ],
+      },
+    },
+    quickReply: getQuickReply(),
+  };
+
   const newsStatusText = settings.newsEnabled ? '🟢 每日 08:00 準時推播' : '⚪ 已關閉推播';
   const newsBtnText = settings.newsEnabled ? '關閉新聞' : '開啟新聞';
   const newsBtnStyle = settings.newsEnabled ? 'secondary' : 'primary';
@@ -3034,4 +2999,3 @@ module.exports = {
   createWelcomeFlex,
   createSettingsFlex,
 };
-

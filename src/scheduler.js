@@ -141,8 +141,8 @@ async function runNewsJob() {
 }
 
 function startScheduler() {
-  // 晚間對話總結（預設 21:00 台北時區）
-  const summaryCron = process.env.SUMMARY_CRON || '0 21 * * *';
+  // 晚間對話總結（預設 19:00 台北時區）
+  const summaryCron = process.env.SUMMARY_CRON || '0 19 * * *';
   cron.schedule(
     summaryCron,
     () => {
@@ -153,17 +153,6 @@ function startScheduler() {
   );
   console.log(`[scheduler] registered summary cron: ${summaryCron} (Asia/Taipei)`);
 
-  // 晨間建築新聞推播（預設 08:00 台北時區）
-  const newsCron = process.env.CONSTRUCTION_NEWS_CRON || '0 8 * * *';
-  cron.schedule(
-    newsCron,
-    () => {
-      console.log(`[scheduler] running daily construction news job (${new Date().toISOString()})`);
-      runNewsJob();
-    },
-    { timezone: 'Asia/Taipei' }
-  );
-  console.log(`[scheduler] registered construction news cron: ${newsCron} (Asia/Taipei)`);
 }
 
 module.exports = {

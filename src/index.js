@@ -11,7 +11,6 @@ const db = require('./db');
 const {
   startScheduler,
   runSummaryJob,
-  runNewsJob,
   summarizeConversation,
 } = require('./scheduler');
 const {
@@ -27,9 +26,7 @@ const {
   createImageFlex,
   createAudioFlex,
   createExecutiveSummaryFlex,
-  createConstructionNewsFlex,
   createMenuFlex,
-  createNewsAnalysisFlex,
   createAssistantFlex,
   createNotesFlex,
   createNoteHelperFlex,
@@ -37,36 +34,14 @@ const {
   createWelcomeFlex,
   createSettingsFlex,
 } = require('./flex');
-const { getDailyConstructionDigest } = require('./news');
 const {
   askAssistant,
-  analyzeNewsDeeply,
   parseNoteFromText,
   synthesizeAll,
 } = require('./assistant');
 
 const SUMMARY_KEYWORD = process.env.SUMMARY_KEYWORD || '摘要';
 const HISTORY_KEYWORDS = ['歷史紀錄', '歷史記錄', '查歷史', '總結歷史', '摘要歷史'];
-const NEWS_KEYWORDS = [
-  '建築新聞',
-  '今日新聞',
-  '新聞',
-  '晨報',
-  '建築晨報',
-  '今日建築新聞',
-  '工程新聞',
-  '建築情報',
-];
-const REFRESH_NEWS_KEYWORDS = [
-  '換新聞',
-  '換一批',
-  '換一批新聞',
-  '下一批',
-  '更多新聞',
-  '最新新聞',
-  '即時新聞',
-  '換這批',
-];
 const MENU_KEYWORDS = ['選單', '功能', '按鈕', 'menu', 'help', '說明', '開始', '控制台'];
 const NOTES_LIST_KEYWORDS = [
   '看記事',
@@ -114,25 +89,6 @@ const SETTINGS_KEYWORDS = [
   'settings',
   '通知',
   '推播管理',
-];
-const NEWS_ENABLE_KEYWORDS = [
-  '開啟新聞',
-  '訂閱新聞',
-  '開啟建築新聞',
-  '開啟晨報',
-  '訂閱晨報',
-  '開啟今日新聞',
-  '訂閱今日新聞',
-];
-const NEWS_DISABLE_KEYWORDS = [
-  '關閉新聞',
-  '取消新聞',
-  '退訂新聞',
-  '關閉建築新聞',
-  '關閉晨報',
-  '退訂晨報',
-  '關閉今日新聞',
-  '退訂今日新聞',
 ];
 const SUMMARY_ENABLE_KEYWORDS = [
   '開啟摘要',
@@ -212,12 +168,6 @@ async function handleEvent(event, conversationId) {
     if (SETTINGS_KEYWORDS.includes(lowerText) || SETTINGS_KEYWORDS.includes(rawText)) {
       return replyImmediateSettings(event.replyToken, conversationId);
     }
-    if (NEWS_ENABLE_KEYWORDS.includes(rawText)) {
-      return replyToggleSetting(event.replyToken, conversationId, 'news', true);
-    }
-    if (NEWS_DISABLE_KEYWORDS.includes(rawText)) {
-      return replyToggleSetting(event.replyToken, conversationId, 'news', false);
-    }
     if (SUMMARY_ENABLE_KEYWORDS.includes(rawText)) {
       return replyToggleSetting(event.replyToken, conversationId, 'summary', true);
     }
@@ -285,45 +235,7 @@ async function handleEvent(event, conversationId) {
       return replyImmediateHistory(event.replyToken, conversationId);
     }
 
-    // 8. 新聞「換一批」次次更新
-    if (REFRESH_NEWS_KEYWORDS.includes(rawText)) {
-      return replyImmediateNews(event.replyToken, { topic: 'all', refresh: true });
-    }
-
-    // 9. 分類新聞專題
-    if (rawText === '綠建ESG' || rawText === '綠建築' || lowerText === 'esg') {
-      return replyImmediateNews(event.replyToken, { topic: 'esg' });
-    }
-    if (rawText === '房市都更' || rawText === '都更' || rawText === '危老' || rawText === '法規') {
-      return replyImmediateNews(event.replyToken, { topic: 'regulation' });
-    }
-    if (rawText === '建築設計' || rawText === '空間設計' || rawText === '設計') {
-      return replyImmediateNews(event.replyToken, { topic: 'design' });
-    }
-    if (rawText === '重大工程' || rawText === '營造工程' || rawText === '工程') {
-      return replyImmediateNews(event.replyToken, { topic: 'engineering' });
-    }
-    if (rawText === '智慧建築' || lowerText === 'bim' || rawText === '建築科技') {
-      return replyImmediateNews(event.replyToken, { topic: 'smart' });
-    }
-
-    // 10. 一般今日建築新聞
-    if (NEWS_KEYWORDS.includes(rawText)) {
-      return replyImmediateNews(event.replyToken, { topic: 'all' });
-    }
-
-    // 11. 新聞深度剖析指令 (點擊卡片按鈕觸發)
-    if (
-      rawText.startsWith('剖析新聞:') ||
-      rawText.startsWith('剖析新聞：') ||
-      rawText.startsWith('分析新聞:') ||
-      rawText.startsWith('分析新聞：')
-    ) {
-      const newsTitle = rawText.replace(/^(剖析新聞|分析新聞)[:：]\s*/, '').trim();
-      return replyImmediateNewsAnalysis(event.replyToken, newsTitle);
-    }
-
-    // 12. 檢查是否有網址（YouTube/網頁）並豐富化內容
+    // 8. 檢查是否有網址（YouTube/網頁）並豐富化內容
     const { enrichedText, items } = await enrichMessageText(event.message.text);
     textContent = enrichedText;
 
@@ -496,7 +408,7 @@ async function replyImmediateMenu(replyToken) {
       messages: [
         {
           type: 'text',
-          text: '🎛️ 核心功能選單：\n1. 記一筆（新增記事）\n2. 看記事（待辦清單）\n3. 智能統整\n4. 今日新聞\n5. 推播設定',
+          text: '🎛️ 核心功能選單：\n1. 記一筆（新增記事）\n2. 看記事（待辦清單）\n3. 智能統整\n4. 推播設定',
           quickReply: getQuickReply(),
         },
       ],
@@ -616,7 +528,7 @@ async function replyImmediateSummary(replyToken, conversationId) {
       messages: [
         {
           type: 'text',
-          text: '目前今日還沒有累積新的對話內容。可點擊下方按鈕閱讀今日新聞或直接向 AI 諮詢！',
+          text: '目前今日還沒有累積新的對話內容。您可以直接向 AI 諮詢！',
           quickReply: getQuickReply(),
         },
       ],
@@ -696,57 +608,6 @@ async function replyImmediateHistory(replyToken, conversationId) {
   console.log(`[history] replied ${records.length} record(s) for ${conversationId}`);
 }
 
-async function replyImmediateNews(replyToken, options = { topic: 'all' }) {
-  try {
-    const digest = await getDailyConstructionDigest(options);
-    const flexCard = createConstructionNewsFlex(digest);
-    await client.replyMessage({
-      replyToken,
-      messages: [flexCard],
-    });
-    console.log(`[news] replied news flex card for topic [${digest.category}]`);
-  } catch (err) {
-    console.error('[news] on-demand reply error:', err.message);
-    await client.replyMessage({
-      replyToken,
-      messages: [
-        {
-          type: 'text',
-          text: '🏗️ 正在抓取最新建築與營造產業新聞，請稍候片刻點擊「換新聞」再試。',
-          quickReply: getQuickReply(),
-        },
-      ],
-    });
-  }
-}
-
-async function replyImmediateNewsAnalysis(replyToken, newsTitle) {
-  try {
-    const analysisData = await analyzeNewsDeeply(newsTitle);
-    const flexCard = createNewsAnalysisFlex({
-      title: newsTitle,
-      data: analysisData,
-    });
-    await client.replyMessage({
-      replyToken,
-      messages: [flexCard],
-    });
-    console.log(`[news-analysis] replied structured analysis for: ${newsTitle}`);
-  } catch (err) {
-    console.error('[news-analysis] reply error:', err.message);
-    await client.replyMessage({
-      replyToken,
-      messages: [
-        {
-          type: 'text',
-          text: `💡 新聞深度剖析：\n${newsTitle}\n\n分析生成中發生錯誤，請稍後重試。`,
-          quickReply: getQuickReply(),
-        },
-      ],
-    });
-  }
-}
-
 async function replyImmediateSettings(replyToken, conversationId) {
   try {
     const settings = await db.getConversationSettings(conversationId);
@@ -772,10 +633,10 @@ async function replyImmediateSettings(replyToken, conversationId) {
 
 async function replyToggleSetting(replyToken, conversationId, type, enabled) {
   try {
-    const updateObj = type === 'news' ? { newsEnabled: enabled } : { summaryEnabled: enabled };
+    const updateObj = { summaryEnabled: enabled };
     const updated = await db.updateConversationSettings(conversationId, updateObj);
     const flexCard = createSettingsFlex(updated);
-    const label = type === 'news' ? '📰 晨間建築新聞 (08:00)' : '📋 晚間對話總結 (21:00)';
+    const label = '📋 晚間對話總結 (19:00)';
     const actionText = enabled ? '已成功開啟 🟢' : '已成功關閉 ⚪';
 
     await client.replyMessage({
@@ -809,14 +670,6 @@ async function handlePostback(event, conversationId) {
   const params = new URLSearchParams(data);
   const action = params.get('action');
 
-  if (action === 'toggle_news') {
-    const current = await db.getConversationSettings(conversationId);
-    return replyToggleSetting(event.replyToken, conversationId, 'news', !current.newsEnabled);
-  }
-  if (action === 'set_news') {
-    const enabled = params.get('enabled') === 'true';
-    return replyToggleSetting(event.replyToken, conversationId, 'news', enabled);
-  }
   if (action === 'toggle_summary') {
     const current = await db.getConversationSettings(conversationId);
     return replyToggleSetting(event.replyToken, conversationId, 'summary', !current.summaryEnabled);
@@ -845,16 +698,6 @@ app.post('/tasks/summary', express.json(), async (req, res) => {
   res.json({ ok: true });
 });
 
-// 手動觸發晨間建築新聞推播排程
-app.post('/tasks/news', express.json(), async (req, res) => {
-  const secret = process.env.SUMMARY_TRIGGER_SECRET;
-  if (secret && req.get('x-trigger-secret') !== secret) {
-    return res.sendStatus(401);
-  }
-  const result = await runNewsJob();
-  res.json({ ok: true, result });
-});
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`[server] listening on port ${PORT}`);
@@ -871,4 +714,3 @@ app.listen(PORT, () => {
     }, 12 * 60 * 1000);
   }
 });
-
